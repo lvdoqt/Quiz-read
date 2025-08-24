@@ -212,7 +212,7 @@ export default function QuizPage() {
                     </CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="flex flex-col flex-grow pb-4 lg:pb-8 overflow-y-auto max-h-[70vh] lg:max-h-none" style={{scrollPaddingBottom: '80px'}}>
+              <CardContent className="flex flex-col flex-grow pb-4 lg:pb-8 overflow-y-auto max-h-[70vh] lg:max-h-none" style={{scrollPaddingBottom: '120px'}}>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
                   {currentQuestion.options.map((option, i) => {
                     const isCorrect = option === currentQuestion.correctAnswer
@@ -265,6 +265,32 @@ export default function QuizPage() {
                       </Button>
                     )
                   })}
+                  </div>
+                  <div className="fixed left-0 right-0 bottom-0 z-30 p-4 lg:p-6 bg-white/90 backdrop-blur-md border-t border-blue-200 flex justify-center items-center" style={{boxShadow: '0 -2px 16px rgba(0,0,0,0.04)'}}>
+                      <Button 
+                        onClick={handleSubmitAnswer} 
+                        disabled={!selectedAnswer || isAnswered} 
+                        className={cn(
+                          "w-full max-w-md h-12 lg:h-14 text-base lg:text-lg font-bold rounded-2xl transition-all duration-300 transform lg:hover:scale-[1.02] shadow-lg",
+                          !selectedAnswer || isAnswered 
+                            ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+                            : "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-xl hover:shadow-2xl"
+                        )}
+                        size="lg"
+                      >
+                        {isAnswered ? (
+                          <div className="flex items-center gap-2">
+                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                            Đang chuyển câu tiếp theo...
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <Zap className="h-4 w-4 lg:h-5 lg:w-5" />
+                            Gửi câu trả lời
+                          </div>
+                        )}
+                      </Button>
+                  </div>
                 </div>
               </CardContent>
               <div className="p-4 lg:p-6 pt-0 mt-auto border-t lg:border-t-0 bg-white/50 lg:bg-transparent">
