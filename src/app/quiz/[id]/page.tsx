@@ -138,9 +138,12 @@ export default function QuizPage() {
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 md:p-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
         <div className="lg:col-span-2 perspective">
-          <Card className={cn("shadow-lg w-full min-h-[500px] bg-card flex flex-col transition-transform duration-500", isFlipping && "flip-card")}>
+           <Card className={cn(
+              "shadow-lg w-full bg-card flex flex-col transition-transform duration-500 border-2 border-primary/20",
+              isFlipping && "flip-card"
+            )}>
             <div className='card-face card-front flex flex-col w-full h-full'>
               <CardHeader>
                 <div className="flex justify-between items-center mb-4">
@@ -200,9 +203,13 @@ export default function QuizPage() {
                   })}
                 </div>
                 <div className="flex-grow" />
-                <Button onClick={handleSubmitAnswer} disabled={!selectedAnswer || isAnswered} className="w-full mt-8" size="lg">
-                  {isAnswered ? 'Vui lòng đợi...' : 'Gửi câu trả lời'}
-                </Button>
+                 {/* Spacer for mobile to prevent button overlap */}
+                <div className="h-16 md:hidden" />
+                <div className='p-4 md:p-0'>
+                  <Button onClick={handleSubmitAnswer} disabled={!selectedAnswer || isAnswered} className="w-full mt-4" size="lg">
+                    {isAnswered ? 'Vui lòng đợi...' : 'Gửi câu trả lời'}
+                  </Button>
+                </div>
               </CardContent>
             </div>
             <div className='card-face card-back'>
@@ -214,7 +221,7 @@ export default function QuizPage() {
         </div>
 
         <div className="lg:col-span-1">
-          <Card className="shadow-lg bg-card">
+          <Card className="shadow-lg bg-card border-2 border-primary/20">
             <CardHeader>
               <CardTitle className="flex items-center gap-2"><Trophy className="text-yellow-400" /> Bảng xếp hạng</CardTitle>
             </CardHeader>

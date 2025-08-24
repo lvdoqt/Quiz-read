@@ -29,7 +29,8 @@ function ResultsContent() {
 
   useEffect(() => {
     const finalState = searchParams.get('finalState')
-    const name = localStorage.getItem('playerName') || 'Khách'
+    // Always get the most recent player name from localStorage
+    const name = typeof window !== 'undefined' ? localStorage.getItem('playerName') || 'Khách' : 'Khách';
     setPlayerName(name)
     if (finalState) {
       const decodedState = decodeState(finalState)
