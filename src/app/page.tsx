@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Gamepad2, BrainCircuit } from 'lucide-react'
+import { Gamepad2, BrainCircuit, BookUser, User } from 'lucide-react'
 
 export default function Home() {
   const [quizCode, setQuizCode] = useState('')
@@ -31,7 +31,7 @@ export default function Home() {
         <p className="text-foreground/80 text-lg">The ultimate real-time trivia battleground.</p>
       </div>
 
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md space-y-6">
         <Card className="w-full shadow-lg bg-card/50 backdrop-blur-sm border-border/30">
           <form onSubmit={handleJoinQuiz}>
             <CardHeader>
@@ -67,12 +67,40 @@ export default function Home() {
             </CardFooter>
           </form>
         </Card>
-      </div>
-      <div className="mt-6 text-center">
-        <p className="text-sm text-foreground/80">Or, if you are a teacher...</p>
-        <Button variant="link" onClick={() => router.push('/create')} className="text-foreground">
-          Create a New Quiz
-        </Button>
+
+        <Card className="w-full shadow-lg bg-card/50 backdrop-blur-sm border-border/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-2xl">How to Use</CardTitle>
+              <CardDescription>Follow these steps to get started.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 text-left">
+              <div>
+                <h3 className="font-semibold flex items-center gap-2 mb-1"><BookUser /> For Teachers:</h3>
+                <ol className="list-decimal list-inside space-y-1 text-sm text-foreground/90">
+                  <li>Click on "Create a New Quiz" below.</li>
+                  <li>Fill in the 10 questions and their respective answer choices.</li>
+                  <li>Mark the correct answer for each question.</li>
+                  <li>Click "Generate Quiz" to get a unique code.</li>
+                  <li>Share this code with your students.</li>
+                </ol>
+              </div>
+               <div>
+                <h3 className="font-semibold flex items-center gap-2 mb-1"><User /> For Players:</h3>
+                <ol className="list-decimal list-inside space-y-1 text-sm text-foreground/90">
+                  <li>Get the quiz code from your teacher.</li>
+                  <li>Enter the code in the "Quiz Code" field above.</li>
+                  <li>Enter your name.</li>
+                  <li>Click "Enter Arena" to start the quiz!</li>
+                </ol>
+              </div>
+            </CardContent>
+             <CardFooter className="flex-col items-center">
+                 <p className="text-sm text-foreground/80">Are you a teacher?</p>
+                <Button variant="link" onClick={() => router.push('/create')} className="text-foreground">
+                Create a New Quiz
+                </Button>
+            </CardFooter>
+          </Card>
       </div>
     </main>
   )
