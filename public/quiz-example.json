@@ -1,0 +1,58 @@
+[
+  {
+    "id": 1,
+    "text": "Trong không gian Oxyz, cho mặt cầu (S): x² + y² + z² - 2x + 4y - 6z - 11 = 0. Tâm của mặt cầu (S) có tọa độ là:",
+    "options": [
+      "I(1; -2; 3)",
+      "I(-1; 2; -3)",
+      "I(2; -4; 6)",
+      "I(-2; 4; -6)"
+    ],
+    "correctAnswer": "I(1; -2; 3)"
+  },
+  {
+    "id": 2,
+    "text": "Giá trị của biểu thức \\(\\log_{2}(8)\\) là bao nhiêu?",
+    "options": [
+      "2",
+      "3",
+      "4",
+      "1"
+    ],
+    "correctAnswer": "3"
+  },
+  {
+    "id": 3,
+    "text": "Cho hàm số y = x³ - 3x. Đồ thị hàm số có điểm cực đại là:",
+    "options": [
+      "(-1; 2)",
+      "(1; -2)",
+      "(0; 0)",
+      "(-1; -2)"
+    ],
+    "correctAnswer": "(-1; 2)"
+  },
+  {
+    "id": 4,
+    "text": "Hình nào sau đây là hình đa diện lồi?",
+    "options": [
+      "Hình chóp tứ giác",
+      "Hình lăng trụ tam giác",
+      "Hình lập phương",
+      "Tất cả các đáp án trên"
+    ],
+    "correctAnswer": "Tất cả các đáp án trên",
+    "image": "https://placehold.co/600x400.png"
+  },
+  {
+    "id": 5,
+    "text": "Nguyên hàm của hàm số f(x) = sin(x) là:",
+    "options": [
+      "cos(x) + C",
+      "-cos(x) + C",
+      "sin(2x) + C",
+      "-sin(x) + C"
+    ],
+    "correctAnswer": "-cos(x) + C"
+  }
+]

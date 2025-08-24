@@ -5,95 +5,136 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { ArrowLeft, Wand2 } from 'lucide-react'
+import { ArrowLeft, Wand2, Upload } from 'lucide-react'
 import { useToast } from "@/hooks/use-toast"
-
-type Question = {
-  text: string;
-  options: string[];
-  correctAnswer: string;
-};
-
-const initialQuestions: Question[] = Array(10).fill({}).map(() => ({
-  text: '',
-  options: ['', '', '', ''],
-  correctAnswer: '',
-}));
+import { Question } from '@/lib/quiz-data'
 
 export default function CreateQuizPage() {
-  const [questions, setQuestions] = useState<Question[]>(initialQuestions);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [fileName, setFileName] = useState('');
   const router = useRouter();
   const { toast } = useToast();
 
-  const handleQuestionChange = (index: number, field: 'text' | 'correctAnswer', value: string) => {
-    const newQuestions = [...questions];
-    newQuestions[index] = { ...newQuestions[index], [field]: value };
-    setQuestions(newQuestions);
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file && file.type === "application/json") {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const content = e.target?.result;
+          if (typeof content === 'string') {
+            const parsedQuestions = JSON.parse(content);
+            // Basic validation
+            if (Array.isArray(parsedQuestions) && parsedQuestions.every(q => q.text && q.options && q.correctAnswer)) {
+              setQuestions(parsedQuestions);
+              setFileName(file.name);
+               toast({
+                title: "Tải tệp thành công!",
+                description: `Đã tải ${parsedQuestions.length} câu hỏi từ tệp ${file.name}.`,
+              });
+            } else {
+              throw new Error("Invalid JSON format");
+            }
+          }
+        } catch (error) {
+          toast({
+            variant: "destructive",
+            title: "Lỗi!",
+            description: "Tệp JSON không hợp lệ hoặc không đúng định dạng.",
+          });
+          setQuestions([]);
+          setFileName('');
+        }
+      };
+      reader.readAsText(file);
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Lỗi!",
+        description: "Vui lòng chọn một tệp JSON.",
+      });
+      setQuestions([]);
+      setFileName('');
+    }
   };
 
-  const handleOptionChange = (qIndex: number, oIndex: number, value: string) => {
-    const newQuestions = [...questions];
-    const newOptions = [...newQuestions[qIndex].options];
-    newOptions[oIndex] = value;
-    newQuestions[qIndex] = { ...newQuestions[qIndex], options: newOptions };
-    setQuestions(newQuestions);
-  };
 
   const handleCreateQuiz = () => {
+    if (questions.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Chưa có câu hỏi",
+        description: "Vui lòng tải lên một tệp JSON chứa các câu hỏi.",
+      });
+      return;
+    }
     const quizCode = Math.random().toString(36).substring(2, 8).toUpperCase();
     console.log("Quiz Data:", questions);
+    // Here you would typically save the quiz to a database
+    localStorage.setItem(`quiz-${quizCode}`, JSON.stringify(questions));
+
     toast({
       title: "Tạo Quiz thành công!",
       description: `Mã quiz của bạn là: ${quizCode}. Hãy chia sẻ với học sinh của bạn!`,
       duration: 10000,
     });
+     router.push('/teacher/dashboard');
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[hsl(var(--background))] to-[hsl(var(--accent))]">
         <header className="p-4 border-b border-border/30">
-            <Button variant="outline" onClick={() => router.push('/')}>
+            <Button variant="outline" onClick={() => router.push('/teacher/dashboard')}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Về trang chủ
+                Về trang quản lý
             </Button>
         </header>
         <main className="container mx-auto py-8 px-4">
-            <Card className="max-w-4xl mx-auto shadow-lg bg-card/50 backdrop-blur-sm border-border/30">
+            <Card className="max-w-2xl mx-auto shadow-lg bg-card/50 backdrop-blur-sm border-border/30">
                 <CardHeader>
                     <CardTitle className="text-3xl font-headline">Tạo Quiz mới</CardTitle>
-                    <CardDescription>Điền vào 10 câu hỏi cho đấu trường quiz của bạn.</CardDescription>
+                    <CardDescription>Tải lên một tệp JSON chứa danh sách các câu hỏi của bạn.</CardDescription>
                 </CardHeader>
-                <CardContent>
-                    <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
-                        {questions.map((q, qIndex) => (
-                            <AccordionItem value={`item-${qIndex + 1}`} key={qIndex}>
-                                <AccordionTrigger>Câu hỏi {qIndex + 1}</AccordionTrigger>
-                                <AccordionContent>
-                                    <div className="space-y-4 p-2">
-                                        <div className="space-y-2">
-                                            <Label htmlFor={`q-text-${qIndex}`}>Nội dung câu hỏi</Label>
-                                            <Input id={`q-text-${qIndex}`} value={q.text} onChange={e => handleQuestionChange(qIndex, 'text', e.target.value)} placeholder="Ví dụ: 2 + 2 bằng mấy?" className="bg-transparent placeholder:text-foreground/60" />
-                                        </div>
-                                        <div className="space-y-2">
-                                            <Label>Các lựa chọn & Đáp án đúng</Label>
-                                            <RadioGroup onValueChange={value => handleQuestionChange(qIndex, 'correctAnswer', value)} value={q.correctAnswer}>
-                                                {q.options.map((opt, oIndex) => (
-                                                    <div key={oIndex} className="flex items-center space-x-2">
-                                                        <Input value={opt} onChange={e => handleOptionChange(qIndex, oIndex, e.target.value)} placeholder={`Lựa chọn ${oIndex + 1}`} className="bg-transparent placeholder:text-foreground/60"/>
-                                                        <RadioGroupItem value={opt} id={`q-${qIndex}-opt-${oIndex}`} />
-                                                        <Label htmlFor={`q-${qIndex}-opt-${oIndex}`}>Đúng</Label>
-                                                    </div>
-                                                ))}
-                                            </RadioGroup>
-                                        </div>
-                                    </div>
-                                </AccordionContent>
-                            </AccordionItem>
-                        ))}
-                    </Accordion>
-                    <Button onClick={handleCreateQuiz} className="w-full mt-6" size="lg">
+                <CardContent className="space-y-6">
+                    <div className="space-y-2">
+                      <Label htmlFor="quiz-file">Tệp câu hỏi (.json)</Label>
+                      <div className="flex items-center gap-4">
+                         <Input id="quiz-file" type="file" accept=".json" onChange={handleFileChange} className="hidden" />
+                         <Label htmlFor="quiz-file" className="flex-grow">
+                            <div className="h-12 border border-dashed border-border rounded-md flex items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors">
+                              {fileName ? (
+                                <span className="text-sm font-medium text-foreground">{fileName}</span>
+                              ) : (
+                                <div className='flex items-center gap-2 text-muted-foreground'>
+                                  <Upload className="h-5 w-5" />
+                                  <span>Nhấp để chọn tệp</span>
+                                </div>
+                              )}
+                            </div>
+                         </Label>
+                      </div>
+                      <p className="text-xs text-muted-foreground pt-1">
+                        Chưa có tệp mẫu? {" "}
+                        <a href="/quiz-example.json" download className="underline hover:text-primary">Tải tệp JSON mẫu tại đây.</a>
+                      </p>
+                    </div>
+
+                    {questions.length > 0 && (
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">Xem trước Quiz</h3>
+                        <p className="text-sm text-muted-foreground">Đã tải {questions.length} câu hỏi.</p>
+                        <div className="mt-4 max-h-60 overflow-y-auto space-y-2 rounded-md border p-4">
+                          {questions.map((q, i) => (
+                            <div key={i} className="text-xs border-b pb-2">
+                              <p className="font-bold">{i+1}. {q.text}</p>
+                              <p className="text-green-400">Đáp án: {q.correctAnswer}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <Button onClick={handleCreateQuiz} className="w-full mt-6" size="lg" disabled={questions.length === 0}>
                         <Wand2 className="mr-2 h-5 w-5" />
                         Tạo Quiz
                     </Button>

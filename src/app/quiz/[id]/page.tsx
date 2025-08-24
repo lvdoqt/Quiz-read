@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { useRouter, useParams } from 'next/navigation'
-import { mockQuizQuestions, mockPlayers, Player } from '@/lib/quiz-data'
+import Image from 'next/image'
+import { mockQuizQuestions, mockPlayers, Player, Question } from '@/lib/quiz-data'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
@@ -15,6 +16,9 @@ const QUIZ_DURATION_MINUTES = 15;
 export default function QuizPage() {
   const router = useRouter()
   const params = useParams()
+  const quizId = params.id as string;
+
+  const [quizQuestions, setQuizQuestions] = useState<Question[]>(mockQuizQuestions);
   const [playerName, setPlayerName] = useState('Người chơi')
   const [players, setPlayers] = useState<Player[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
@@ -22,14 +26,20 @@ export default function QuizPage() {
   const [isAnswered, setIsAnswered] = useState(false)
   const [timeLeft, setTimeLeft] = useState(QUIZ_DURATION_MINUTES * 60)
 
-  const currentQuestion = useMemo(() => mockQuizQuestions[currentQuestionIndex], [currentQuestionIndex])
+  const currentQuestion = useMemo(() => quizQuestions[currentQuestionIndex], [currentQuestionIndex, quizQuestions])
 
   useEffect(() => {
+    // In a real app, you'd fetch quiz data based on quizId
+    const storedQuiz = localStorage.getItem(`quiz-${quizId}`);
+    if (storedQuiz) {
+      setQuizQuestions(JSON.parse(storedQuiz));
+    }
+
     const name = localStorage.getItem('playerName') || 'Khách'
     setPlayerName(name)
     const userPlayer: Player = { id: 'p1', name, score: 0, avatar: `https://robohash.org/${name.split(' ').join('') || 'guest'}.png?size=40x40&set=set4` }
     setPlayers([userPlayer, ...mockPlayers])
-  }, [])
+  }, [quizId])
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -72,7 +82,7 @@ export default function QuizPage() {
     }
 
     setTimeout(() => {
-      if (currentQuestionIndex < mockQuizQuestions.length - 1) {
+      if (currentQuestionIndex < quizQuestions.length - 1) {
         setCurrentQuestionIndex(prev => prev + 1)
         setSelectedAnswer(null)
         setIsAnswered(false)
@@ -95,13 +105,25 @@ export default function QuizPage() {
           <Card className="shadow-lg">
             <CardHeader>
               <div className="flex justify-between items-center mb-4">
-                <p className="text-sm text-muted-foreground">Câu hỏi {currentQuestionIndex + 1} trên {mockQuizQuestions.length}</p>
+                <p className="text-sm text-muted-foreground">Câu hỏi {currentQuestionIndex + 1} trên {quizQuestions.length}</p>
                 <div className="flex items-center gap-2 bg-muted px-3 py-1 rounded-full text-sm font-semibold">
                   <Clock className="h-4 w-4" />
                   <span>{Math.floor(timeLeft / 60)}:{('0' + (timeLeft % 60)).slice(-2)}</span>
                 </div>
               </div>
-              <Progress value={((currentQuestionIndex + 1) / mockQuizQuestions.length) * 100} className="w-full" />
+              <Progress value={((currentQuestionIndex + 1) / quizQuestions.length) * 100} className="w-full" />
+              {currentQuestion.image && (
+                <div className="mt-4 relative w-full h-64">
+                   <Image 
+                      src={currentQuestion.image} 
+                      alt={`Hình ảnh cho câu hỏi ${currentQuestionIndex + 1}`} 
+                      fill
+                      style={{ objectFit: 'contain' }}
+                      className="rounded-md"
+                      data-ai-hint="math problem"
+                    />
+                </div>
+              )}
               <CardTitle className="pt-6 text-2xl md:text-3xl font-headline">{currentQuestion.text}</CardTitle>
             </CardHeader>
             <CardContent>

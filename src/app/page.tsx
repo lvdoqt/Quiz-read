@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Gamepad2, BrainCircuit, BookUser, User } from 'lucide-react'
+import { Gamepad2, BrainCircuit, BookUser, User, School } from 'lucide-react'
 
 export default function Home() {
   const [quizCode, setQuizCode] = useState('')
@@ -70,20 +70,10 @@ export default function Home() {
 
         <Card className="w-full shadow-lg bg-card/50 backdrop-blur-sm border-border/30">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-2xl">Hướng dẫn sử dụng</CardTitle>
+              <CardTitle className="flex items-center gap-2 text-2xl"><BookUser /> Hướng dẫn sử dụng</CardTitle>
               <CardDescription>Làm theo các bước sau để bắt đầu.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 text-left">
-              <div>
-                <h3 className="font-semibold flex items-center gap-2 mb-1"><BookUser /> Dành cho Giáo viên:</h3>
-                <ol className="list-decimal list-inside space-y-1 text-sm text-foreground/90">
-                  <li>Nhấp vào "Tạo Quiz mới" bên dưới.</li>
-                  <li>Điền 10 câu hỏi và các lựa chọn trả lời tương ứng.</li>
-                  <li>Đánh dấu câu trả lời đúng cho mỗi câu hỏi.</li>
-                  <li>Nhấp vào "Tạo Quiz" để nhận mã duy nhất.</li>
-                  <li>Chia sẻ mã này với học sinh của bạn.</li>
-                </ol>
-              </div>
                <div>
                 <h3 className="font-semibold flex items-center gap-2 mb-1"><User /> Dành cho Người chơi:</h3>
                 <ol className="list-decimal list-inside space-y-1 text-sm text-foreground/90">
@@ -96,8 +86,9 @@ export default function Home() {
             </CardContent>
              <CardFooter className="flex-col items-center">
                  <p className="text-sm text-foreground/80">Bạn là giáo viên?</p>
-                <Button variant="link" onClick={() => router.push('/create')} className="text-foreground">
-                Tạo Quiz mới
+                <Button variant="secondary" onClick={() => router.push('/teacher/login')} className="text-foreground">
+                  <School className="mr-2"/>
+                  Khu vực giáo viên
                 </Button>
             </CardFooter>
           </Card>

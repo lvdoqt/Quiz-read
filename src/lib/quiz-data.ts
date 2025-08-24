@@ -10,6 +10,7 @@ export interface Question {
   text: string;
   options: string[];
   correctAnswer: string;
+  image?: string; // Optional image URL
 }
 
 export const mockQuizQuestions: Question[] = [
