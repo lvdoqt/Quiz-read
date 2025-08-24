@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { BrainCircuit, LogIn } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 
-const DUMMY_PASSWORD = "password123";
+const DUMMY_PASSWORD = "lvd123456";
 
 export default function TeacherLoginPage() {
   const [password, setPassword] = useState('');
