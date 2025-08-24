@@ -137,22 +137,22 @@ export default function QuizPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-4 sm:p-6 md:p-8">
+    <div className="min-h-screen bg-gradient-to-br from-[hsl(var(--background))] to-[hsl(var(--accent))] p-4 sm:p-6 md:p-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
         <div className="lg:col-span-2 perspective">
-          <Card className={cn("shadow-lg w-full h-full transition-transform duration-500", isFlipping && "flip-card")}>
-            <div className='card-face card-front'>
+          <Card className={cn("shadow-lg w-full min-h-[500px] bg-card/50 backdrop-blur-sm border-border/30 flex flex-col transition-transform duration-500", isFlipping && "flip-card")}>
+            <div className='card-face card-front flex flex-col w-full h-full'>
               <CardHeader>
                 <div className="flex justify-between items-center mb-4">
                   <p className="text-sm text-muted-foreground">Câu hỏi {currentQuestionIndex + 1} trên {quizQuestions.length}</p>
-                  <div className="flex items-center gap-2 bg-muted px-3 py-1 rounded-full text-sm font-semibold">
+                  <div className="flex items-center gap-2 bg-muted/80 px-3 py-1 rounded-full text-sm font-semibold">
                     <Clock className="h-4 w-4" />
                     <span>{Math.floor(timeLeft / 60)}:{('0' + (timeLeft % 60)).slice(-2)}</span>
                   </div>
                 </div>
                 <Progress value={((currentQuestionIndex + 1) / quizQuestions.length) * 100} className="w-full" />
                 
-                <div className="mt-6 p-4 rounded-lg bg-muted/30 border-2 border-primary/30 min-h-[120px]">
+                <div className="mt-6 p-4 rounded-lg bg-muted/30 border-2 border-primary/30 min-h-[120px] flex items-center justify-center">
                     {currentQuestion.image && (
                         <div className="mb-4 relative w-full h-64">
                         <Image 
@@ -165,12 +165,12 @@ export default function QuizPage() {
                         />
                         </div>
                     )}
-                    <CardTitle className="text-xl md:text-2xl font-headline">
+                    <CardTitle className="text-xl md:text-2xl font-headline text-center">
                         <MathRenderer text={currentQuestion.text} />
                     </CardTitle>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="flex flex-col flex-grow">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {currentQuestion.options.map((option, i) => {
                     const isCorrect = option === currentQuestion.correctAnswer
@@ -182,22 +182,24 @@ export default function QuizPage() {
                         variant="outline"
                         className={cn(
                           "h-auto justify-start p-4 text-base md:text-lg text-left whitespace-normal transition-all duration-300",
-                          isSelected && !isAnswered && "ring-2 ring-primary border-primary",
+                           "bg-background/20 border-border/50 hover:bg-background/40",
+                          isSelected && !isAnswered && "ring-2 ring-primary border-primary bg-primary/20",
                           isAnswered && isCorrect && "bg-green-500/30 border-green-500 text-foreground hover:bg-green-500/40",
-                          isAnswered && isSelected && !isCorrect && "bg-destructive/20 border-destructive text-destructive-foreground hover:bg-destructive/30"
+                          isAnswered && isSelected && !isCorrect && "bg-destructive/30 border-destructive text-foreground hover:bg-destructive/40"
                         )}
                         onClick={() => handleAnswerSelect(option)}
                         disabled={isAnswered}
                       >
                           <div className="flex items-center w-full">
-                              {isAnswered && isCorrect && <CheckCircle className="mr-3 h-6 w-6 flex-shrink-0 text-green-500" />}
-                              {isAnswered && isSelected && !isCorrect && <XCircle className="mr-3 h-6 w-6 flex-shrink-0" />}
+                              {isAnswered && isCorrect && <CheckCircle className="mr-3 h-6 w-6 flex-shrink-0 text-green-400" />}
+                              {isAnswered && isSelected && !isCorrect && <XCircle className="mr-3 h-6 w-6 flex-shrink-0 text-red-400" />}
                               <span className="flex-1 text-left"><MathRenderer text={option} /></span>
                           </div>
                       </Button>
                     )
                   })}
                 </div>
+                <div className="flex-grow" />
                 <Button onClick={handleSubmitAnswer} disabled={!selectedAnswer || isAnswered} className="w-full mt-8" size="lg">
                   {isAnswered ? 'Vui lòng đợi...' : 'Gửi câu trả lời'}
                 </Button>
@@ -212,14 +214,14 @@ export default function QuizPage() {
         </div>
 
         <div className="lg:col-span-1">
-          <Card className="shadow-lg">
+          <Card className="shadow-lg bg-card/50 backdrop-blur-sm border-border/30">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Trophy className="text-yellow-500" /> Bảng xếp hạng</CardTitle>
+              <CardTitle className="flex items-center gap-2"><Trophy className="text-yellow-400" /> Bảng xếp hạng</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-3 max-h-[60vh] overflow-y-auto">
+              <ul className="space-y-3 max-h-[60vh] lg:max-h-[calc(100vh-180px)] overflow-y-auto pr-2">
                 {sortedPlayers.map((player, index) => (
-                  <li key={player.id} className={cn("flex items-center justify-between p-2 rounded-lg", player.name === playerName ? 'bg-primary/20' : 'bg-muted/50')}>
+                  <li key={player.id} className={cn("flex items-center justify-between p-3 rounded-lg", player.name === playerName ? 'bg-primary/20 border border-primary/50' : 'bg-muted/50')}>
                     <div className="flex items-center gap-3">
                         <span className="font-bold w-6 text-center text-muted-foreground">{index + 1}</span>
                         <Avatar className="h-8 w-8">
