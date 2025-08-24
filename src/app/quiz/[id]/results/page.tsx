@@ -10,6 +10,17 @@ import { Trophy, Award, Home } from 'lucide-react'
 import { Confetti } from '@/components/ui/confetti'
 import { cn } from '@/lib/utils'
 
+function decodeState(encodedState: string): any {
+    try {
+        const decoded = decodeURIComponent(atob(encodedState));
+        return JSON.parse(decoded);
+    } catch (error) {
+        console.error("Failed to decode state:", error);
+        return null;
+    }
+}
+
+
 function ResultsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -21,12 +32,12 @@ function ResultsContent() {
     const name = localStorage.getItem('playerName') || 'Khách'
     setPlayerName(name)
     if (finalState) {
-      try {
-        const decodedState = JSON.parse(atob(finalState))
+      const decodedState = decodeState(finalState)
+      if (decodedState) {
         const sorted = (decodedState as Player[]).sort((a, b) => b.score - a.score)
         setPlayers(sorted)
-      } catch (error) {
-        console.error("Không thể phân tích trạng thái cuối cùng", error)
+      } else {
+        console.error("Không thể phân tích trạng thái cuối cùng")
         router.push('/')
       }
     } else {

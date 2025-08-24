@@ -13,6 +13,12 @@ import { cn } from '@/lib/utils'
 
 const QUIZ_DURATION_MINUTES = 15;
 
+function encodeState(state: any): string {
+  const jsonString = JSON.stringify(state);
+  const encoded = btoa(encodeURIComponent(jsonString));
+  return encoded;
+}
+
 export default function QuizPage() {
   const router = useRouter()
   const params = useParams()
@@ -43,7 +49,7 @@ export default function QuizPage() {
 
   useEffect(() => {
     if (timeLeft <= 0) {
-      router.push(`/quiz/${params.id}/results?finalState=${btoa(JSON.stringify(players))}`)
+      router.push(`/quiz/${params.id}/results?finalState=${encodeState(players)}`)
       return
     }
     const timer = setInterval(() => {
@@ -87,7 +93,7 @@ export default function QuizPage() {
         setSelectedAnswer(null)
         setIsAnswered(false)
       } else {
-        router.push(`/quiz/${params.id}/results?finalState=${btoa(JSON.stringify(players))}`)
+        router.push(`/quiz/${params.id}/results?finalState=${encodeState(players)}`)
       }
     }, 2000)
   }
