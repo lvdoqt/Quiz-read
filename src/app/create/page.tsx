@@ -68,7 +68,7 @@ export default function CreateQuizPage() {
       });
       return;
     }
-    const quizCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const quizCode = Math.floor(1000 + Math.random() * 9000).toString();
     console.log("Quiz Data:", questions);
     // Here you would typically save the quiz to a database
     localStorage.setItem(`quiz-${quizCode}`, JSON.stringify(questions));

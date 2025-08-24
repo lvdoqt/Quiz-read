@@ -43,7 +43,7 @@ export default function Home() {
                 <Label htmlFor="quiz-code">Mã Quiz</Label>
                 <Input 
                   id="quiz-code" 
-                  placeholder="ví dụ: A1B2C3" 
+                  placeholder="ví dụ: 1234" 
                   value={quizCode}
                   onChange={(e) => setQuizCode(e.target.value)}
                   required 
