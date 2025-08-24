@@ -26,24 +26,24 @@ export default function Home() {
       <div className="text-center mb-8">
         <div className="flex justify-center items-center gap-4 mb-2">
             <BrainCircuit className="h-12 w-12 text-foreground" />
-            <h1 className="text-5xl font-bold font-headline text-foreground">Quiz Arena</h1>
+            <h1 className="text-5xl font-bold font-headline text-foreground">Đấu trường Quiz</h1>
         </div>
-        <p className="text-foreground/80 text-lg">The ultimate real-time trivia battleground.</p>
+        <p className="text-foreground/80 text-lg">Chiến trường đố vui thời gian thực đỉnh cao.</p>
       </div>
 
       <div className="w-full max-w-md space-y-6">
         <Card className="w-full shadow-lg bg-card/50 backdrop-blur-sm border-border/30">
           <form onSubmit={handleJoinQuiz}>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-2xl"><Gamepad2 /> Join a Quiz</CardTitle>
-              <CardDescription>Enter a quiz code and your name to start.</CardDescription>
+              <CardTitle className="flex items-center gap-2 text-2xl"><Gamepad2 /> Tham gia Quiz</CardTitle>
+              <CardDescription>Nhập mã quiz và tên của bạn để bắt đầu.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="quiz-code">Quiz Code</Label>
+                <Label htmlFor="quiz-code">Mã Quiz</Label>
                 <Input 
                   id="quiz-code" 
-                  placeholder="e.g., A1B2C3" 
+                  placeholder="ví dụ: A1B2C3" 
                   value={quizCode}
                   onChange={(e) => setQuizCode(e.target.value)}
                   required 
@@ -51,10 +51,10 @@ export default function Home() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="player-name">Your Name</Label>
+                <Label htmlFor="player-name">Tên của bạn</Label>
                 <Input 
                   id="player-name" 
-                  placeholder="Enter your name"
+                  placeholder="Nhập tên của bạn"
                   value={playerName}
                   onChange={(e) => setPlayerName(e.target.value)}
                   required 
@@ -63,41 +63,41 @@ export default function Home() {
               </div>
             </CardContent>
             <CardFooter>
-              <Button type="submit" className="w-full" size="lg">Enter Arena</Button>
+              <Button type="submit" className="w-full" size="lg">Vào Đấu trường</Button>
             </CardFooter>
           </form>
         </Card>
 
         <Card className="w-full shadow-lg bg-card/50 backdrop-blur-sm border-border/30">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-2xl">How to Use</CardTitle>
-              <CardDescription>Follow these steps to get started.</CardDescription>
+              <CardTitle className="flex items-center gap-2 text-2xl">Hướng dẫn sử dụng</CardTitle>
+              <CardDescription>Làm theo các bước sau để bắt đầu.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4 text-left">
               <div>
-                <h3 className="font-semibold flex items-center gap-2 mb-1"><BookUser /> For Teachers:</h3>
+                <h3 className="font-semibold flex items-center gap-2 mb-1"><BookUser /> Dành cho Giáo viên:</h3>
                 <ol className="list-decimal list-inside space-y-1 text-sm text-foreground/90">
-                  <li>Click on "Create a New Quiz" below.</li>
-                  <li>Fill in the 10 questions and their respective answer choices.</li>
-                  <li>Mark the correct answer for each question.</li>
-                  <li>Click "Generate Quiz" to get a unique code.</li>
-                  <li>Share this code with your students.</li>
+                  <li>Nhấp vào "Tạo Quiz mới" bên dưới.</li>
+                  <li>Điền 10 câu hỏi và các lựa chọn trả lời tương ứng.</li>
+                  <li>Đánh dấu câu trả lời đúng cho mỗi câu hỏi.</li>
+                  <li>Nhấp vào "Tạo Quiz" để nhận mã duy nhất.</li>
+                  <li>Chia sẻ mã này với học sinh của bạn.</li>
                 </ol>
               </div>
                <div>
-                <h3 className="font-semibold flex items-center gap-2 mb-1"><User /> For Players:</h3>
+                <h3 className="font-semibold flex items-center gap-2 mb-1"><User /> Dành cho Người chơi:</h3>
                 <ol className="list-decimal list-inside space-y-1 text-sm text-foreground/90">
-                  <li>Get the quiz code from your teacher.</li>
-                  <li>Enter the code in the "Quiz Code" field above.</li>
-                  <li>Enter your name.</li>
-                  <li>Click "Enter Arena" to start the quiz!</li>
+                  <li>Nhận mã quiz từ giáo viên của bạn.</li>
+                  <li>Nhập mã vào trường "Mã Quiz" ở trên.</li>
+                  <li>Nhập tên của bạn.</li>
+                  <li>Nhấp vào "Vào Đấu trường" để bắt đầu quiz!</li>
                 </ol>
               </div>
             </CardContent>
              <CardFooter className="flex-col items-center">
-                 <p className="text-sm text-foreground/80">Are you a teacher?</p>
+                 <p className="text-sm text-foreground/80">Bạn là giáo viên?</p>
                 <Button variant="link" onClick={() => router.push('/create')} className="text-foreground">
-                Create a New Quiz
+                Tạo Quiz mới
                 </Button>
             </CardFooter>
           </Card>

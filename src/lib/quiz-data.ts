@@ -13,21 +13,21 @@ export interface Question {
 }
 
 export const mockQuizQuestions: Question[] = [
-  { id: 1, text: "What is the capital of France?", options: ["Berlin", "Madrid", "Paris", "Rome"], correctAnswer: "Paris" },
-  { id: 2, text: "Which planet is known as the Red Planet?", options: ["Earth", "Mars", "Jupiter", "Venus"], correctAnswer: "Mars" },
-  { id: 3, text: "What is the largest ocean on Earth?", options: ["Atlantic", "Indian", "Arctic", "Pacific"], correctAnswer: "Pacific" },
-  { id: 4, text: "Who wrote 'To Kill a Mockingbird'?", options: ["Harper Lee", "Mark Twain", "F. Scott Fitzgerald", "Ernest Hemingway"], correctAnswer: "Harper Lee" },
-  { id: 5, text: "What is the chemical symbol for water?", options: ["O2", "H2O", "CO2", "NaCl"], correctAnswer: "H2O" },
-  { id: 6, text: "How many continents are there?", options: ["5", "6", "7", "8"], correctAnswer: "7" },
-  { id: 7, text: "Who painted the Mona Lisa?", options: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Claude Monet"], correctAnswer: "Leonardo da Vinci" },
-  { id: 8, text: "What is the hardest natural substance on Earth?", options: ["Gold", "Iron", "Diamond", "Quartz"], correctAnswer: "Diamond" },
-  { id: 9, text: "In which year did the Titanic sink?", options: ["1912", "1905", "1898", "1923"], correctAnswer: "1912" },
-  { id: 10, text: "What is the currency of Japan?", options: ["Yuan", "Won", "Yen", "Baht"], correctAnswer: "Yen" },
+  { id: 1, text: "Thủ đô của Việt Nam là gì?", options: ["Hà Nội", "Đà Nẵng", "TP. Hồ Chí Minh", "Hải Phòng"], correctAnswer: "Hà Nội" },
+  { id: 2, text: "Hành tinh nào được mệnh danh là 'Hành tinh Đỏ'?", options: ["Trái Đất", "Sao Hỏa", "Sao Mộc", "Sao Kim"], correctAnswer: "Sao Hỏa" },
+  { id: 3, text: "Đại dương lớn nhất trên Trái Đất là gì?", options: ["Đại Tây Dương", "Ấn Độ Dương", "Bắc Băng Dương", "Thái Bình Dương"], correctAnswer: "Thái Bình Dương" },
+  { id: 4, text: "Ai là tác giả của 'Truyện Kiều'?", options: ["Nguyễn Du", "Hồ Xuân Hương", "Nguyễn Trãi", "Tô Hoài"], correctAnswer: "Nguyễn Du" },
+  { id: 5, text: "Ký hiệu hóa học của nước là gì?", options: ["O2", "H2O", "CO2", "NaCl"], correctAnswer: "H2O" },
+  { id: 6, text: "Có bao nhiêu châu lục trên thế giới?", options: ["5", "6", "7", "8"], correctAnswer: "7" },
+  { id: 7, text: "Ai đã vẽ bức tranh 'Mona Lisa'?", options: ["Vincent van Gogh", "Pablo Picasso", "Leonardo da Vinci", "Claude Monet"], correctAnswer: "Leonardo da Vinci" },
+  { id: 8, text: "Chất tự nhiên cứng nhất trên Trái Đất là gì?", options: ["Vàng", "Sắt", "Kim cương", "Thạch anh"], correctAnswer: "Kim cương" },
+  { id: 9, text: "Tàu Titanic bị chìm vào năm nào?", options: ["1912", "1905", "1898", "1923"], correctAnswer: "1912" },
+  { id: 10, text: "Đơn vị tiền tệ của Nhật Bản là gì?", options: ["Nhân dân tệ", "Won", "Yên", "Baht"], correctAnswer: "Yên" },
 ];
 
 export const mockPlayers: Player[] = [
-  { id: 'p2', name: 'Bot Alice', score: 0, avatar: `https://robohash.org/alice.png?size=40x40&set=set4` },
-  { id: 'p3', name: 'Bot Bob', score: 0, avatar: `https://robohash.org/bob.png?size=40x40&set=set4` },
-  { id: 'p4', name: 'Bot Charlie', score: 0, avatar: `https://robohash.org/charlie.png?size=40x40&set=set4` },
-  { id: 'p5', name: 'Bot Diana', score: 0, avatar: `https://robohash.org/diana.png?size=40x40&set=set4` },
+  { id: 'p2', name: 'Bot An', score: 0, avatar: `https://robohash.org/an.png?size=40x40&set=set4` },
+  { id: 'p3', name: 'Bot Bình', score: 0, avatar: `https://robohash.org/binh.png?size=40x40&set=set4` },
+  { id: 'p4', name: 'Bot Châu', score: 0, avatar: `https://robohash.org/chau.png?size=40x40&set=set4` },
+  { id: 'p5', name: 'Bot Dũng', score: 0, avatar: `https://robohash.org/dung.png?size=40x40&set=set4` },
 ];

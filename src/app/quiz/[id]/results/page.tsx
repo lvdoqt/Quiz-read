@@ -18,7 +18,7 @@ function ResultsContent() {
 
   useEffect(() => {
     const finalState = searchParams.get('finalState')
-    const name = localStorage.getItem('playerName') || 'Guest Player'
+    const name = localStorage.getItem('playerName') || 'Khách'
     setPlayerName(name)
     if (finalState) {
       try {
@@ -26,7 +26,7 @@ function ResultsContent() {
         const sorted = (decodedState as Player[]).sort((a, b) => b.score - a.score)
         setPlayers(sorted)
       } catch (error) {
-        console.error("Failed to parse final state", error)
+        console.error("Không thể phân tích trạng thái cuối cùng", error)
         router.push('/')
       }
     } else {
@@ -40,7 +40,7 @@ function ResultsContent() {
   if (players.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p>Loading results...</p>
+        <p>Đang tải kết quả...</p>
       </div>
     )
   }
@@ -53,15 +53,15 @@ function ResultsContent() {
           <div className="flex justify-center">
             <Trophy className="h-16 w-16 text-yellow-400" />
           </div>
-          <CardTitle className="text-4xl font-headline mt-4">Quiz Complete!</CardTitle>
-          <CardDescription>Here are the final standings.</CardDescription>
+          <CardTitle className="text-4xl font-headline mt-4">Quiz đã hoàn thành!</CardTitle>
+          <CardDescription>Đây là bảng xếp hạng cuối cùng.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {userResult && (
             <div className="p-4 rounded-lg bg-primary/10 border-2 border-primary">
-              <p className="text-lg">You finished</p>
+              <p className="text-lg">Bạn đã về đích ở vị trí</p>
               <p className="text-5xl font-bold text-primary-foreground">#{userRank}</p>
-              <p className="text-lg">with <span className="font-bold">{userResult.score}</span> points!</p>
+              <p className="text-lg">với <span className="font-bold">{userResult.score}</span> điểm!</p>
             </div>
           )}
           
@@ -88,7 +88,7 @@ function ResultsContent() {
           
           <Button onClick={() => router.push('/')} className="w-full mt-4" size="lg">
             <Home className="mr-2 h-5 w-5" />
-            Play Again
+            Chơi lại
           </Button>
         </CardContent>
       </Card>
@@ -99,7 +99,7 @@ function ResultsContent() {
 
 export default function ResultsPage() {
   return (
-    <Suspense fallback={<div>Loading results...</div>}>
+    <Suspense fallback={<div>Đang tải kết quả...</div>}>
       <ResultsContent />
     </Suspense>
   )

@@ -45,8 +45,8 @@ export default function CreateQuizPage() {
     const quizCode = Math.random().toString(36).substring(2, 8).toUpperCase();
     console.log("Quiz Data:", questions);
     toast({
-      title: "Quiz Created!",
-      description: `Your quiz code is: ${quizCode}. Share it with your students!`,
+      title: "Tạo Quiz thành công!",
+      description: `Mã quiz của bạn là: ${quizCode}. Hãy chia sẻ với học sinh của bạn!`,
       duration: 10000,
     });
   };
@@ -56,34 +56,34 @@ export default function CreateQuizPage() {
         <header className="p-4 border-b border-border/30">
             <Button variant="outline" onClick={() => router.push('/')}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Home
+                Về trang chủ
             </Button>
         </header>
         <main className="container mx-auto py-8 px-4">
             <Card className="max-w-4xl mx-auto shadow-lg bg-card/50 backdrop-blur-sm border-border/30">
                 <CardHeader>
-                    <CardTitle className="text-3xl font-headline">Create a New Quiz</CardTitle>
-                    <CardDescription>Fill in the 10 questions for your quiz arena.</CardDescription>
+                    <CardTitle className="text-3xl font-headline">Tạo Quiz mới</CardTitle>
+                    <CardDescription>Điền vào 10 câu hỏi cho đấu trường quiz của bạn.</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
                         {questions.map((q, qIndex) => (
                             <AccordionItem value={`item-${qIndex + 1}`} key={qIndex}>
-                                <AccordionTrigger>Question {qIndex + 1}</AccordionTrigger>
+                                <AccordionTrigger>Câu hỏi {qIndex + 1}</AccordionTrigger>
                                 <AccordionContent>
                                     <div className="space-y-4 p-2">
                                         <div className="space-y-2">
-                                            <Label htmlFor={`q-text-${qIndex}`}>Question Text</Label>
-                                            <Input id={`q-text-${qIndex}`} value={q.text} onChange={e => handleQuestionChange(qIndex, 'text', e.target.value)} placeholder="What is 2 + 2?" className="bg-transparent placeholder:text-foreground/60" />
+                                            <Label htmlFor={`q-text-${qIndex}`}>Nội dung câu hỏi</Label>
+                                            <Input id={`q-text-${qIndex}`} value={q.text} onChange={e => handleQuestionChange(qIndex, 'text', e.target.value)} placeholder="Ví dụ: 2 + 2 bằng mấy?" className="bg-transparent placeholder:text-foreground/60" />
                                         </div>
                                         <div className="space-y-2">
-                                            <Label>Answer Options & Correct Answer</Label>
+                                            <Label>Các lựa chọn & Đáp án đúng</Label>
                                             <RadioGroup onValueChange={value => handleQuestionChange(qIndex, 'correctAnswer', value)} value={q.correctAnswer}>
                                                 {q.options.map((opt, oIndex) => (
                                                     <div key={oIndex} className="flex items-center space-x-2">
-                                                        <Input value={opt} onChange={e => handleOptionChange(qIndex, oIndex, e.target.value)} placeholder={`Option ${oIndex + 1}`} className="bg-transparent placeholder:text-foreground/60"/>
+                                                        <Input value={opt} onChange={e => handleOptionChange(qIndex, oIndex, e.target.value)} placeholder={`Lựa chọn ${oIndex + 1}`} className="bg-transparent placeholder:text-foreground/60"/>
                                                         <RadioGroupItem value={opt} id={`q-${qIndex}-opt-${oIndex}`} />
-                                                        <Label htmlFor={`q-${qIndex}-opt-${oIndex}`}>Correct</Label>
+                                                        <Label htmlFor={`q-${qIndex}-opt-${oIndex}`}>Đúng</Label>
                                                     </div>
                                                 ))}
                                             </RadioGroup>
@@ -95,7 +95,7 @@ export default function CreateQuizPage() {
                     </Accordion>
                     <Button onClick={handleCreateQuiz} className="w-full mt-6" size="lg">
                         <Wand2 className="mr-2 h-5 w-5" />
-                        Generate Quiz
+                        Tạo Quiz
                     </Button>
                 </CardContent>
             </Card>

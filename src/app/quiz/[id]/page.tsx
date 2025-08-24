@@ -15,7 +15,7 @@ const QUIZ_DURATION_MINUTES = 15;
 export default function QuizPage() {
   const router = useRouter()
   const params = useParams()
-  const [playerName, setPlayerName] = useState('Player')
+  const [playerName, setPlayerName] = useState('Người chơi')
   const [players, setPlayers] = useState<Player[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
@@ -25,7 +25,7 @@ export default function QuizPage() {
   const currentQuestion = useMemo(() => mockQuizQuestions[currentQuestionIndex], [currentQuestionIndex])
 
   useEffect(() => {
-    const name = localStorage.getItem('playerName') || 'Guest Player'
+    const name = localStorage.getItem('playerName') || 'Khách'
     setPlayerName(name)
     const userPlayer: Player = { id: 'p1', name, score: 0, avatar: `https://robohash.org/${name.split(' ').join('') || 'guest'}.png?size=40x40&set=set4` }
     setPlayers([userPlayer, ...mockPlayers])
@@ -85,7 +85,7 @@ export default function QuizPage() {
   const sortedPlayers = useMemo(() => [...players].sort((a, b) => b.score - a.score), [players])
 
   if (!currentQuestion) {
-    return <div>Loading Quiz...</div>
+    return <div>Đang tải Quiz...</div>
   }
 
   return (
@@ -95,7 +95,7 @@ export default function QuizPage() {
           <Card className="shadow-lg">
             <CardHeader>
               <div className="flex justify-between items-center mb-4">
-                <p className="text-sm text-muted-foreground">Question {currentQuestionIndex + 1} of {mockQuizQuestions.length}</p>
+                <p className="text-sm text-muted-foreground">Câu hỏi {currentQuestionIndex + 1} trên {mockQuizQuestions.length}</p>
                 <div className="flex items-center gap-2 bg-muted px-3 py-1 rounded-full text-sm font-semibold">
                   <Clock className="h-4 w-4" />
                   <span>{Math.floor(timeLeft / 60)}:{('0' + (timeLeft % 60)).slice(-2)}</span>
@@ -131,7 +131,7 @@ export default function QuizPage() {
                 })}
               </div>
               <Button onClick={handleSubmitAnswer} disabled={!selectedAnswer || isAnswered} className="w-full mt-8" size="lg">
-                {isAnswered ? 'Please wait...' : 'Submit Answer'}
+                {isAnswered ? 'Vui lòng đợi...' : 'Gửi câu trả lời'}
               </Button>
             </CardContent>
           </Card>
@@ -140,7 +140,7 @@ export default function QuizPage() {
         <div className="lg:col-span-1">
           <Card className="shadow-lg">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Trophy className="text-yellow-500" /> Leaderboard</CardTitle>
+              <CardTitle className="flex items-center gap-2"><Trophy className="text-yellow-500" /> Bảng xếp hạng</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-3 max-h-[60vh] overflow-y-auto">
