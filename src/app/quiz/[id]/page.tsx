@@ -10,13 +10,20 @@ import { Progress } from '@/components/ui/progress'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Trophy, Clock, CheckCircle, XCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { InlineMath, BlockMath } from 'react-katex';
 
 const QUIZ_DURATION_MINUTES = 15;
 
 function encodeState(state: any): string {
-  const jsonString = JSON.stringify(state);
-  const encoded = btoa(encodeURIComponent(jsonString));
-  return encoded;
+  try {
+    const jsonString = JSON.stringify(state);
+    const encoded = btoa(encodeURIComponent(jsonString));
+    return encoded;
+  } catch (error) {
+    console.error("Encoding failed:", error);
+    // Fallback or error handling
+    return '';
+  }
 }
 
 export default function QuizPage() {
@@ -35,10 +42,14 @@ export default function QuizPage() {
   const currentQuestion = useMemo(() => quizQuestions[currentQuestionIndex], [currentQuestionIndex, quizQuestions])
 
   useEffect(() => {
-    // In a real app, you'd fetch quiz data based on quizId
     const storedQuiz = localStorage.getItem(`quiz-${quizId}`);
     if (storedQuiz) {
-      setQuizQuestions(JSON.parse(storedQuiz));
+        try {
+            const parsedQuestions = JSON.parse(storedQuiz);
+            setQuizQuestions(parsedQuestions);
+        } catch(e) {
+            console.error("Failed to parse quiz from localStorage", e);
+        }
     }
 
     const name = localStorage.getItem('playerName') || 'Khách'
@@ -130,7 +141,9 @@ export default function QuizPage() {
                     />
                 </div>
               )}
-              <CardTitle className="pt-6 text-2xl md:text-3xl font-headline">{currentQuestion.text}</CardTitle>
+              <CardTitle className="pt-6 text-2xl md:text-3xl font-headline">
+                <BlockMath math={currentQuestion.text} />
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -145,15 +158,17 @@ export default function QuizPage() {
                       className={cn(
                         "h-auto justify-start p-4 text-base md:text-lg text-left whitespace-normal transition-all duration-300",
                         isSelected && !isAnswered && "ring-2 ring-primary border-primary",
-                        isAnswered && isCorrect && "bg-accent/30 border-accent text-accent-foreground hover:bg-accent/40",
+                        isAnswered && isCorrect && "bg-green-500/30 border-green-500 text-foreground hover:bg-green-500/40",
                         isAnswered && isSelected && !isCorrect && "bg-destructive/20 border-destructive text-destructive-foreground hover:bg-destructive/30"
                       )}
                       onClick={() => handleAnswerSelect(option)}
                       disabled={isAnswered}
                     >
-                      {isAnswered && isCorrect && <CheckCircle className="mr-2 h-5 w-5 flex-shrink-0" />}
-                      {isAnswered && isSelected && !isCorrect && <XCircle className="mr-2 h-5 w-5 flex-shrink-0" />}
-                      {option}
+                        <div className="flex items-center w-full">
+                            {isAnswered && isCorrect && <CheckCircle className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />}
+                            {isAnswered && isSelected && !isCorrect && <XCircle className="mr-2 h-5 w-5 flex-shrink-0" />}
+                            <span className="flex-1 text-left"><InlineMath math={option} /></span>
+                        </div>
                     </Button>
                   )
                 })}
