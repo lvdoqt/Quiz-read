@@ -212,7 +212,7 @@ export default function QuizPage() {
                     </CardTitle>
                 </div>
               </CardHeader>
-              <CardContent className="flex flex-col flex-grow pb-4 lg:pb-8 overflow-y-auto max-h-[50vh] lg:max-h-none">
+              <CardContent className="flex flex-col flex-grow pb-4 lg:pb-8 overflow-y-auto max-h-[70vh] lg:max-h-none" style={{scrollPaddingBottom: '80px'}}>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
                   {currentQuestion.options.map((option, i) => {
                     const isCorrect = option === currentQuestion.correctAnswer
@@ -228,7 +228,7 @@ export default function QuizPage() {
                           "bg-white/80 backdrop-blur-sm border-2 border-gray-200/50 hover:border-blue-300/50 rounded-2xl",
                           isSelected && !isAnswered && "ring-4 ring-blue-400/50 border-blue-400 bg-gradient-to-r from-blue-50 to-purple-50 shadow-lg lg:scale-[1.02]",
                           isAnswered && isCorrect && "bg-gradient-to-r from-green-400/20 to-emerald-400/20 border-green-400 text-foreground hover:from-green-400/30 hover:to-emerald-400/30 shadow-lg animate-pulse",
-                          isAnswered && isSelected && !isCorrect && "bg-gradient-to-r from-red-400/20 to-pink-400/20 border-red-400 text-foreground hover:from-red-400/30 hover:to-pink-400/30 shadow-lg",
+                          isAnswered && isSelected && !isCorrect && "bg-gradient-to-r from-red-400/20 to-pink-400/20 border-red-400 text-foreground hover:from-red-400/30 hover:to-pink-400/30 shadow-lg animate-shake",
                           !isAnswered && "lg:hover:bg-gradient-to-r lg:hover:from-blue-50 lg:hover:to-purple-50"
                         )}
                         onClick={() => handleAnswerSelect(option)}
@@ -251,8 +251,15 @@ export default function QuizPage() {
                                 )}
                               </div>
                               <span className="flex-1 text-left font-medium text-gray-800"><MathRenderer text={option} /></span>
+                              {isAnswered && isSelected && (
+                                <span className={cn(
+                                  "ml-3 text-xs font-bold",
+                                  isCorrect ? "text-green-600 animate-pulse" : "text-red-600 animate-shake"
+                                )}>
+                                  {isCorrect ? "Đúng!" : "Sai!"}
+                                </span>
+                              )}
                           </div>
-                          
                           {/* Hover effect overlay */}
                           <div className="absolute inset-0 bg-gradient-to-r from-blue-400/0 to-purple-400/0 lg:group-hover:from-blue-400/5 lg:group-hover:to-purple-400/5 rounded-2xl transition-all duration-300 pointer-events-none"></div>
                       </Button>
