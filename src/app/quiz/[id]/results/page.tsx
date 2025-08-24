@@ -59,7 +59,7 @@ function ResultsContent() {
   return (
     <div className="relative min-h-screen bg-background flex flex-col items-center justify-center p-4">
       {userRank === 1 && <Confetti />}
-      <Card className="w-full max-w-2xl text-center shadow-2xl z-10 animate-in fade-in zoom-in-95">
+      <Card className="w-full max-w-2xl text-center shadow-2xl z-10 animate-in fade-in zoom-in-95 bg-card">
         <CardHeader>
           <div className="flex justify-center">
             <Trophy className="h-16 w-16 text-yellow-400" />
@@ -71,14 +71,14 @@ function ResultsContent() {
           {userResult && (
             <div className="p-4 rounded-lg bg-primary/10 border-2 border-primary">
               <p className="text-lg">Bạn đã về đích ở vị trí</p>
-              <p className="text-5xl font-bold text-primary-foreground">#{userRank}</p>
+              <p className="text-5xl font-bold text-primary">#{userRank}</p>
               <p className="text-lg">với <span className="font-bold">{userResult.score}</span> điểm!</p>
             </div>
           )}
           
           <div className="text-left space-y-3 max-h-60 overflow-y-auto pr-2">
             {players.map((player, index) => (
-              <div key={player.id} className={cn("flex items-center justify-between p-3 rounded-lg", player.name === playerName ? 'bg-primary/20' : 'bg-muted/50')}>
+              <div key={player.id} className={cn("flex items-center justify-between p-3 rounded-lg", player.name === playerName ? 'bg-primary/10' : 'bg-muted/50')}>
                 <div className="flex items-center gap-4">
                     <span className="font-bold text-lg w-8 text-center text-muted-foreground">{index + 1}</span>
                     <Avatar className="h-10 w-10">
@@ -92,7 +92,7 @@ function ResultsContent() {
                       {index === 2 && <Award className="h-5 w-5 text-amber-700" />}
                     </div>
                 </div>
-                <p className="font-bold text-xl text-primary-foreground">{player.score}</p>
+                <p className="font-bold text-xl text-primary">{player.score}</p>
               </div>
             ))}
           </div>

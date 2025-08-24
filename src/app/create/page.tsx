@@ -82,15 +82,15 @@ export default function CreateQuizPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[hsl(var(--background))] to-[hsl(var(--accent))]">
-        <header className="p-4 border-b border-border/30">
+    <div className="min-h-screen bg-background">
+        <header className="p-4 border-b">
             <Button variant="outline" onClick={() => router.push('/teacher/dashboard')}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Về trang quản lý
             </Button>
         </header>
         <main className="container mx-auto py-8 px-4">
-            <Card className="max-w-2xl mx-auto shadow-lg bg-card/50 backdrop-blur-sm border-border/30">
+            <Card className="max-w-2xl mx-auto shadow-lg">
                 <CardHeader>
                     <CardTitle className="text-3xl font-headline">Tạo Quiz mới</CardTitle>
                     <CardDescription>Tải lên một tệp JSON chứa danh sách các câu hỏi của bạn.</CardDescription>
@@ -101,7 +101,7 @@ export default function CreateQuizPage() {
                       <div className="flex items-center gap-4">
                          <Input id="quiz-file" type="file" accept=".json" onChange={handleFileChange} className="hidden" />
                          <Label htmlFor="quiz-file" className="flex-grow">
-                            <div className="h-12 border border-dashed border-border rounded-md flex items-center justify-center cursor-pointer hover:bg-muted/50 transition-colors">
+                            <div className="h-12 border border-dashed border-input rounded-md flex items-center justify-center cursor-pointer hover:bg-muted transition-colors">
                               {fileName ? (
                                 <span className="text-sm font-medium text-foreground">{fileName}</span>
                               ) : (
@@ -125,9 +125,9 @@ export default function CreateQuizPage() {
                         <p className="text-sm text-muted-foreground">Đã tải {questions.length} câu hỏi.</p>
                         <div className="mt-4 max-h-60 overflow-y-auto space-y-2 rounded-md border p-4">
                           {questions.map((q, i) => (
-                            <div key={i} className="text-xs border-b pb-2">
+                            <div key={i} className="text-xs border-b pb-2 last:border-b-0">
                               <p className="font-bold">{i+1}. {q.text}</p>
-                              <p className="text-green-400">Đáp án: {q.correctAnswer}</p>
+                              <p className="text-green-600">Đáp án: {q.correctAnswer}</p>
                             </div>
                           ))}
                         </div>

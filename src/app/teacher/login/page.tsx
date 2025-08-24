@@ -48,16 +48,16 @@ export default function TeacherLoginPage() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[hsl(var(--background))] to-[hsl(var(--accent))] p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
       <div className="text-center mb-8">
         <div className="flex justify-center items-center gap-4 mb-2">
-            <BrainCircuit className="h-12 w-12 text-foreground" />
+            <BrainCircuit className="h-12 w-12 text-primary" />
             <h1 className="text-5xl font-bold font-headline text-foreground">Đăng nhập Giáo viên</h1>
         </div>
-        <p className="text-foreground/80 text-lg">Chào mừng đến với khu vực quản lý.</p>
+        <p className="text-muted-foreground text-lg">Chào mừng đến với khu vực quản lý.</p>
       </div>
 
-      <Card className="w-full max-w-sm shadow-lg bg-card/50 backdrop-blur-sm border-border/30">
+      <Card className="w-full max-w-sm shadow-lg">
         <form onSubmit={handleLogin}>
           <CardHeader>
             <CardTitle>Nhập mật khẩu</CardTitle>
@@ -73,7 +73,7 @@ export default function TeacherLoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required 
-                className="text-base bg-transparent placeholder:text-foreground/60"
+                className="text-base"
               />
             </div>
           </CardContent>
@@ -81,7 +81,7 @@ export default function TeacherLoginPage() {
             <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
               {isLoading ? 'Đang xử lý...' : <> <LogIn className='mr-2' /> Đăng nhập </>}
             </Button>
-            <Button variant="link" onClick={() => router.push('/')} className="text-foreground">
+            <Button variant="link" onClick={() => router.push('/')} className="text-foreground/80">
                 Quay về trang chủ
             </Button>
           </CardFooter>

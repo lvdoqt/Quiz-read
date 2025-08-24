@@ -56,26 +56,25 @@ export default function TeacherDashboard() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[hsl(var(--background))] to-[hsl(var(--accent))] p-4">
+    <div className="min-h-screen bg-background p-4">
       <div className="container mx-auto py-8">
         <div className="text-center mb-8">
           <div className="flex justify-center items-center gap-4 mb-2">
-              <BrainCircuit className="h-12 w-12 text-foreground" />
+              <BrainCircuit className="h-12 w-12 text-primary" />
               <h1 className="text-5xl font-bold font-headline text-foreground">Trang quản lý giáo viên</h1>
           </div>
-          <p className="text-foreground/80 text-lg">Quản lý các bài quiz của bạn tại đây.</p>
+          <p className="text-muted-foreground text-lg">Quản lý các bài quiz của bạn tại đây.</p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <Card className="shadow-lg bg-card/50 backdrop-blur-sm border-border/30">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <Card className="shadow-lg lg:col-span-1">
                 <CardHeader>
                     <CardTitle>Hành động</CardTitle>
-                    <CardDescription>Tạo quiz mới hoặc đăng xuất.</CardDescription>
                 </CardHeader>
                 <CardContent className="flex flex-col gap-4">
-                    <Button variant="outline" className="h-24 flex-col gap-2" onClick={() => router.push('/create')}>
+                    <Button variant="default" className="h-24 flex-col gap-2" onClick={() => router.push('/create')}>
                     <PlusCircle className="h-8 w-8" />
-                    <span className="font-semibold">Tạo Quiz mới</span>
+                    <span className="font-semibold text-lg">Tạo Quiz mới</span>
                     </Button>
                 </CardContent>
                 <CardFooter>
@@ -86,7 +85,7 @@ export default function TeacherDashboard() {
                 </CardFooter>
             </Card>
 
-            <Card className="shadow-lg bg-card/50 backdrop-blur-sm border-border/30">
+            <Card className="shadow-lg lg:col-span-2">
                 <CardHeader>
                     <CardTitle>Danh sách Quiz đã tạo</CardTitle>
                     <CardDescription>Xem và quản lý các quiz bạn đã tạo.</CardDescription>
