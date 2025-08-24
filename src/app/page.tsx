@@ -22,17 +22,17 @@ export default function Home() {
   }
 
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
+    <main className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-br from-[hsl(var(--background))] to-[hsl(var(--accent))] p-4">
       <div className="text-center mb-8">
         <div className="flex justify-center items-center gap-4 mb-2">
-            <BrainCircuit className="h-12 w-12 text-primary" />
-            <h1 className="text-5xl font-bold font-headline text-primary-foreground">Quiz Arena</h1>
+            <BrainCircuit className="h-12 w-12 text-foreground" />
+            <h1 className="text-5xl font-bold font-headline text-foreground">Quiz Arena</h1>
         </div>
-        <p className="text-muted-foreground text-lg">The ultimate real-time trivia battleground.</p>
+        <p className="text-foreground/80 text-lg">The ultimate real-time trivia battleground.</p>
       </div>
 
       <div className="w-full max-w-md">
-        <Card className="w-full shadow-lg">
+        <Card className="w-full shadow-lg bg-card/50 backdrop-blur-sm border-border/30">
           <form onSubmit={handleJoinQuiz}>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-2xl"><Gamepad2 /> Join a Quiz</CardTitle>
@@ -47,7 +47,7 @@ export default function Home() {
                   value={quizCode}
                   onChange={(e) => setQuizCode(e.target.value)}
                   required 
-                  className="text-base"
+                  className="text-base bg-transparent placeholder:text-foreground/60"
                 />
               </div>
               <div className="space-y-2">
@@ -58,7 +58,7 @@ export default function Home() {
                   value={playerName}
                   onChange={(e) => setPlayerName(e.target.value)}
                   required 
-                  className="text-base"
+                  className="text-base bg-transparent placeholder:text-foreground/60"
                 />
               </div>
             </CardContent>
@@ -69,8 +69,8 @@ export default function Home() {
         </Card>
       </div>
       <div className="mt-6 text-center">
-        <p className="text-sm text-muted-foreground">Or, if you are a teacher...</p>
-        <Button variant="link" onClick={() => router.push('/create')} className="text-primary">
+        <p className="text-sm text-foreground/80">Or, if you are a teacher...</p>
+        <Button variant="link" onClick={() => router.push('/create')} className="text-foreground">
           Create a New Quiz
         </Button>
       </div>

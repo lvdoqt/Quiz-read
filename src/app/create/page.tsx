@@ -52,15 +52,15 @@ export default function CreateQuizPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-        <header className="p-4 border-b">
+    <div className="min-h-screen bg-gradient-to-br from-[hsl(var(--background))] to-[hsl(var(--accent))]">
+        <header className="p-4 border-b border-border/30">
             <Button variant="outline" onClick={() => router.push('/')}>
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 Back to Home
             </Button>
         </header>
         <main className="container mx-auto py-8 px-4">
-            <Card className="max-w-4xl mx-auto shadow-lg">
+            <Card className="max-w-4xl mx-auto shadow-lg bg-card/50 backdrop-blur-sm border-border/30">
                 <CardHeader>
                     <CardTitle className="text-3xl font-headline">Create a New Quiz</CardTitle>
                     <CardDescription>Fill in the 10 questions for your quiz arena.</CardDescription>
@@ -74,14 +74,14 @@ export default function CreateQuizPage() {
                                     <div className="space-y-4 p-2">
                                         <div className="space-y-2">
                                             <Label htmlFor={`q-text-${qIndex}`}>Question Text</Label>
-                                            <Input id={`q-text-${qIndex}`} value={q.text} onChange={e => handleQuestionChange(qIndex, 'text', e.target.value)} placeholder="What is 2 + 2?" />
+                                            <Input id={`q-text-${qIndex}`} value={q.text} onChange={e => handleQuestionChange(qIndex, 'text', e.target.value)} placeholder="What is 2 + 2?" className="bg-transparent placeholder:text-foreground/60" />
                                         </div>
                                         <div className="space-y-2">
                                             <Label>Answer Options & Correct Answer</Label>
                                             <RadioGroup onValueChange={value => handleQuestionChange(qIndex, 'correctAnswer', value)} value={q.correctAnswer}>
                                                 {q.options.map((opt, oIndex) => (
                                                     <div key={oIndex} className="flex items-center space-x-2">
-                                                        <Input value={opt} onChange={e => handleOptionChange(qIndex, oIndex, e.target.value)} placeholder={`Option ${oIndex + 1}`} />
+                                                        <Input value={opt} onChange={e => handleOptionChange(qIndex, oIndex, e.target.value)} placeholder={`Option ${oIndex + 1}`} className="bg-transparent placeholder:text-foreground/60"/>
                                                         <RadioGroupItem value={opt} id={`q-${qIndex}-opt-${oIndex}`} />
                                                         <Label htmlFor={`q-${qIndex}-opt-${oIndex}`}>Correct</Label>
                                                     </div>
