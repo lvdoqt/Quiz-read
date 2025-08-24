@@ -146,212 +146,173 @@ export default function QuizPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4 sm:p-6 md:p-8 relative">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-pink-400/20 to-yellow-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-cyan-400/10 to-blue-400/10 rounded-full blur-3xl animate-spin" style={{animationDuration: '20s'}}></div>
-      </div>
-      
-      <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto">
-        <div className="order-2 lg:order-1 lg:col-span-2 perspective">
-           <Card className={cn(
-              "shadow-2xl w-full bg-white/80 backdrop-blur-sm flex flex-col transition-all duration-500 border-2 border-gradient-to-r from-blue-400/30 to-purple-400/30 hover:shadow-3xl lg:hover:scale-[1.02] min-h-[600px] lg:min-h-0",
+    <>
+      {/* Main content with padding bottom to prevent overlap with fixed button */}
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4 sm:p-6 md:p-8 relative pb-32 lg:pb-24">
+        {/* Animated background elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-pink-400/20 to-yellow-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-cyan-400/10 to-blue-400/10 rounded-full blur-3xl animate-spin" style={{animationDuration: '20s'}}></div>
+        </div>
+        
+        <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto">
+          {/* Question Card */}
+          <div className="order-2 lg:order-1 lg:col-span-2 perspective">
+            <Card className={cn(
+              "shadow-2xl w-full bg-white/80 backdrop-blur-sm flex flex-col transition-all duration-500 border-2 border-gradient-to-r from-blue-400/30 to-purple-400/30 hover:shadow-3xl lg:hover:scale-[1.02]",
               isFlipping && "flip-card"
             )}>
-            <div className='card-face card-front flex flex-col w-full h-full'>
-              <CardHeader>
-                <div className="flex justify-between items-center mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                      <Target className="h-4 w-4" />
-                      <span>Câu {currentQuestionIndex + 1}/{quizQuestions.length}</span>
+              <div className='card-face card-front flex flex-col w-full h-full'>
+                <CardHeader className="pb-4">
+                  <div className="flex justify-between items-center mb-6">
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                        <Target className="h-4 w-4" />
+                        <span>Câu {currentQuestionIndex + 1}/{quizQuestions.length}</span>
+                      </div>
+                      {streak > 1 && (
+                        <div className="flex items-center gap-1 bg-gradient-to-r from-orange-400 to-red-400 text-white px-3 py-1 rounded-full text-xs font-bold animate-bounce">
+                          <Zap className="h-3 w-3" />
+                          <span>{streak} streak!</span>
+                        </div>
+                      )}
                     </div>
-                    {streak > 1 && (
-                      <div className="flex items-center gap-1 bg-gradient-to-r from-orange-400 to-red-400 text-white px-3 py-1 rounded-full text-xs font-bold animate-bounce">
-                        <Zap className="h-3 w-3" />
-                        <span>{streak} streak!</span>
+                    <div className={cn(
+                      "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold shadow-lg transition-all duration-300",
+                      timeLeft > 60 ? "bg-gradient-to-r from-green-400 to-blue-400 text-white" :
+                      timeLeft > 30 ? "bg-gradient-to-r from-yellow-400 to-orange-400 text-white animate-pulse" :
+                      "bg-gradient-to-r from-red-400 to-pink-400 text-white animate-pulse"
+                    )}>
+                      <Clock className="h-4 w-4" />
+                      <span className="tabular-nums">{Math.floor(timeLeft / 60)}:{('0' + (timeLeft % 60)).slice(-2)}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="relative">
+                    <Progress 
+                      value={((currentQuestionIndex + 1) / quizQuestions.length) * 100} 
+                      className="w-full h-3 bg-gray-200 rounded-full overflow-hidden shadow-inner" 
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-full opacity-20 animate-pulse"></div>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="flex flex-col flex-grow">
+                  {/* Question Section */}
+                  <div className="mb-6 p-6 rounded-2xl bg-gradient-to-br from-white/90 to-blue-50/90 backdrop-blur-sm border-2 border-blue-200/50 shadow-lg hover:shadow-xl transition-all duration-300">
+                    {currentQuestion.image && (
+                      <div className="mb-6 relative w-full h-48 lg:h-64 rounded-xl overflow-hidden shadow-lg">
+                        <Image 
+                          src={currentQuestion.image} 
+                          alt={`Hình ảnh cho câu hỏi ${currentQuestionIndex + 1}`} 
+                          fill
+                          style={{ objectFit: 'contain' }}
+                          className="rounded-xl lg:hover:scale-105 transition-transform duration-300"
+                          data-ai-hint="math problem"
+                        />
                       </div>
                     )}
-                  </div>
-                  <div className={cn(
-                    "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold shadow-lg transition-all duration-300",
-                    timeLeft > 60 ? "bg-gradient-to-r from-green-400 to-blue-400 text-white" :
-                    timeLeft > 30 ? "bg-gradient-to-r from-yellow-400 to-orange-400 text-white animate-pulse" :
-                    "bg-gradient-to-r from-red-400 to-pink-400 text-white animate-pulse"
-                  )}>
-                    <Clock className="h-4 w-4" />
-                    <span className="tabular-nums">{Math.floor(timeLeft / 60)}:{('0' + (timeLeft % 60)).slice(-2)}</span>
-                  </div>
-                </div>
-                
-                <div className="relative">
-                  <Progress 
-                    value={((currentQuestionIndex + 1) / quizQuestions.length) * 100} 
-                    className="w-full h-3 bg-gray-200 rounded-full overflow-hidden shadow-inner" 
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-full opacity-20 animate-pulse"></div>
-                </div>
-                
-                <div className="mt-8 p-6 rounded-2xl bg-gradient-to-br from-white/90 to-blue-50/90 backdrop-blur-sm border-2 border-blue-200/50 min-h-[140px] flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300">
-                    {currentQuestion.image && (
-                        <div className="mb-6 relative w-full h-48 lg:h-72 rounded-xl overflow-hidden shadow-lg">
-                        <Image 
-                            src={currentQuestion.image} 
-                            alt={`Hình ảnh cho câu hỏi ${currentQuestionIndex + 1}`} 
-                            fill
-                            style={{ objectFit: 'contain' }}
-                            className="rounded-xl lg:hover:scale-105 transition-transform duration-300"
-                            data-ai-hint="math problem"
-                        />
-                        </div>
-                    )}
-                    <CardTitle className="text-lg md:text-xl lg:text-2xl xl:text-3xl font-bold text-center text-gray-800 leading-relaxed">
-                        <MathRenderer text={currentQuestion.text} />
+                    <CardTitle className="text-lg md:text-xl lg:text-2xl font-bold text-center text-gray-800 leading-relaxed">
+                      <MathRenderer text={currentQuestion.text} />
                     </CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent className="flex flex-col flex-grow pb-4 lg:pb-8 overflow-y-auto max-h-[70vh] lg:max-h-none" style={{scrollPaddingBottom: '120px'}}>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-                  {currentQuestion.options.map((option, i) => {
-                    const isCorrect = option === currentQuestion.correctAnswer
-                    const isSelected = selectedAnswer === option
-                    const optionLabels = ['A', 'B', 'C', 'D'];
-                    
-                    return (
-                      <Button
-                        key={i}
-                        variant="outline"
-                        className={cn(
-                          "group relative h-auto justify-start p-4 lg:p-6 text-sm lg:text-base xl:text-lg text-left whitespace-normal transition-all duration-500 transform lg:hover:scale-[1.02] hover:shadow-lg",
-                          "bg-white/80 backdrop-blur-sm border-2 border-gray-200/50 hover:border-blue-300/50 rounded-2xl",
-                          isSelected && !isAnswered && "ring-4 ring-blue-400/50 border-blue-400 bg-gradient-to-r from-blue-50 to-purple-50 shadow-lg lg:scale-[1.02]",
-                          isAnswered && isCorrect && "bg-gradient-to-r from-green-400/20 to-emerald-400/20 border-green-400 text-foreground hover:from-green-400/30 hover:to-emerald-400/30 shadow-lg animate-pulse",
-                          isAnswered && isSelected && !isCorrect && "bg-gradient-to-r from-red-400/20 to-pink-400/20 border-red-400 text-foreground hover:from-red-400/30 hover:to-pink-400/30 shadow-lg animate-shake",
-                          !isAnswered && "lg:hover:bg-gradient-to-r lg:hover:from-blue-50 lg:hover:to-purple-50"
-                        )}
-                        onClick={() => handleAnswerSelect(option)}
-                        disabled={isAnswered}
-                      >
-                          <div className="flex items-center w-full">
+                  </div>
+
+                  {/* Answer Options Section - with proper spacing */}
+                  <div className="flex-grow">
+                    <div className="grid grid-cols-1 gap-4 mb-6">
+                      {currentQuestion.options.map((option, i) => {
+                        const isCorrect = option === currentQuestion.correctAnswer
+                        const isSelected = selectedAnswer === option
+                        const optionLabels = ['A', 'B', 'C', 'D'];
+                        
+                        return (
+                          <Button
+                            key={i}
+                            variant="outline"
+                            className={cn(
+                              "group relative h-auto justify-start p-4 lg:p-5 text-sm lg:text-base text-left whitespace-normal transition-all duration-500 transform lg:hover:scale-[1.02] hover:shadow-lg min-h-[60px]",
+                              "bg-white/80 backdrop-blur-sm border-2 border-gray-200/50 hover:border-blue-300/50 rounded-2xl",
+                              isSelected && !isAnswered && "ring-4 ring-blue-400/50 border-blue-400 bg-gradient-to-r from-blue-50 to-purple-50 shadow-lg lg:scale-[1.02]",
+                              isAnswered && isCorrect && "bg-gradient-to-r from-green-400/20 to-emerald-400/20 border-green-400 text-foreground hover:from-green-400/30 hover:to-emerald-400/30 shadow-lg animate-pulse",
+                              isAnswered && isSelected && !isCorrect && "bg-gradient-to-r from-red-400/20 to-pink-400/20 border-red-400 text-foreground hover:from-red-400/30 hover:to-pink-400/30 shadow-lg animate-shake",
+                              !isAnswered && "lg:hover:bg-gradient-to-r lg:hover:from-blue-50 lg:hover:to-purple-50"
+                            )}
+                            onClick={() => handleAnswerSelect(option)}
+                            disabled={isAnswered}
+                          >
+                            <div className="flex items-center w-full">
                               <div className={cn(
-                                "flex items-center justify-center w-6 h-6 lg:w-8 lg:h-8 rounded-full mr-3 lg:mr-4 flex-shrink-0 font-bold text-xs lg:text-sm transition-all duration-300",
+                                "flex items-center justify-center w-8 h-8 lg:w-10 lg:h-10 rounded-full mr-4 flex-shrink-0 font-bold text-sm lg:text-base transition-all duration-300",
                                 isSelected && !isAnswered && "bg-blue-500 text-white",
                                 isAnswered && isCorrect && "bg-green-500 text-white",
                                 isAnswered && isSelected && !isCorrect && "bg-red-500 text-white",
                                 !isSelected && !isAnswered && "bg-gray-200 text-gray-600 lg:group-hover:bg-blue-100 lg:group-hover:text-blue-600"
                               )}>
                                 {isAnswered && isCorrect ? (
-                                  <CheckCircle className="h-3 w-3 lg:h-5 lg:w-5" />
+                                  <CheckCircle className="h-5 w-5 lg:h-6 lg:w-6" />
                                 ) : isAnswered && isSelected && !isCorrect ? (
-                                  <XCircle className="h-3 w-3 lg:h-5 lg:w-5" />
+                                  <XCircle className="h-5 w-5 lg:h-6 lg:w-6" />
                                 ) : (
                                   optionLabels[i]
                                 )}
                               </div>
-                              <span className="flex-1 text-left font-medium text-gray-800"><MathRenderer text={option} /></span>
+                              <span className="flex-1 text-left font-medium text-gray-800 leading-relaxed">
+                                <MathRenderer text={option} />
+                              </span>
                               {isAnswered && isSelected && (
                                 <span className={cn(
-                                  "ml-3 text-xs font-bold",
+                                  "ml-3 text-sm font-bold",
                                   isCorrect ? "text-green-600 animate-pulse" : "text-red-600 animate-shake"
                                 )}>
                                   {isCorrect ? "Đúng!" : "Sai!"}
                                 </span>
                               )}
-                          </div>
-                          {/* Hover effect overlay */}
-                          <div className="absolute inset-0 bg-gradient-to-r from-blue-400/0 to-purple-400/0 lg:group-hover:from-blue-400/5 lg:group-hover:to-purple-400/5 rounded-2xl transition-all duration-300 pointer-events-none"></div>
-                      </Button>
-                    )
-                  })}
-                  </div>
-                  <div className="fixed left-0 right-0 bottom-0 z-30 p-4 lg:p-6 bg-white/90 backdrop-blur-md border-t border-blue-200 flex justify-center items-center" style={{boxShadow: '0 -2px 16px rgba(0,0,0,0.04)'}}>
-                      <Button 
-                        onClick={handleSubmitAnswer} 
-                        disabled={!selectedAnswer || isAnswered} 
-                        className={cn(
-                          "w-full max-w-md h-12 lg:h-14 text-base lg:text-lg font-bold rounded-2xl transition-all duration-300 transform lg:hover:scale-[1.02] shadow-lg",
-                          !selectedAnswer || isAnswered 
-                            ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
-                            : "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-xl hover:shadow-2xl"
-                        )}
-                        size="lg"
-                      >
-                        {isAnswered ? (
-                          <div className="flex items-center gap-2">
-                            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                            Đang chuyển câu tiếp theo...
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2">
-                            <Zap className="h-4 w-4 lg:h-5 lg:w-5" />
-                            Gửi câu trả lời
-                          </div>
-                        )}
-                      </Button>
-                  </div>
-                </div>
-              </CardContent>
-              <div className="p-4 lg:p-6 pt-0 mt-auto border-t lg:border-t-0 bg-white/50 lg:bg-transparent">
-                  <Button 
-                    onClick={handleSubmitAnswer} 
-                    disabled={!selectedAnswer || isAnswered} 
-                    className={cn(
-                      "w-full h-12 lg:h-14 text-base lg:text-lg font-bold rounded-2xl transition-all duration-300 transform lg:hover:scale-[1.02] shadow-lg",
-                      !selectedAnswer || isAnswered 
-                        ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
-                        : "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-xl hover:shadow-2xl"
-                    )}
-                    size="lg"
-                  >
-                    {isAnswered ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        Đang chuyển câu tiếp theo...
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <Zap className="h-4 w-4 lg:h-5 lg:w-5" />
-                        Gửi câu trả lời
-                      </div>
-                    )}
-                  </Button>
-              </div>
-            </div>
-            <div className='card-face card-back'>
-                <div className="flex items-center justify-center h-full bg-gradient-to-br from-blue-500 to-purple-500 text-white rounded-2xl">
-                    <div className="text-center">
-                      <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                      <p className="text-2xl font-bold">Chuẩn bị câu hỏi tiếp theo...</p>
+                            </div>
+                            {/* Hover effect overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-r from-blue-400/0 to-purple-400/0 lg:group-hover:from-blue-400/5 lg:group-hover:to-purple-400/5 rounded-2xl transition-all duration-300 pointer-events-none"></div>
+                          </Button>
+                        )
+                      })}
                     </div>
+                  </div>
+                </CardContent>
+              </div>
+              
+              <div className='card-face card-back'>
+                <div className="flex items-center justify-center h-full bg-gradient-to-br from-blue-500 to-purple-500 text-white rounded-2xl">
+                  <div className="text-center">
+                    <div className="w-16 h-16 border-4 border-white border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-2xl font-bold">Chuẩn bị câu hỏi tiếp theo...</p>
+                  </div>
                 </div>
-            </div>
-          </Card>
-        </div>
-
-        <div className="order-1 lg:order-2 lg:col-span-1">
-          <Card className="shadow-2xl bg-white/80 backdrop-blur-sm border-2 border-gradient-to-r from-blue-400/30 to-purple-400/30 rounded-2xl hover:shadow-3xl transition-all duration-300">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3 text-lg lg:text-xl font-bold">
-                <div className="p-2 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full">
-                  <Trophy className="text-white h-4 w-4 lg:h-5 lg:w-5" />
-                </div>
-                <span className="bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-                  Bảng xếp hạng
-                </span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-3 lg:space-y-4 max-h-[30vh] lg:max-h-[calc(100vh-180px)] overflow-y-auto pr-2">
-                {sortedPlayers.map((player, index) => (
-                  <li key={player.id} className={cn(
-                    "flex items-center justify-between p-3 lg:p-4 rounded-2xl transition-all duration-300 lg:hover:scale-[1.02] hover:shadow-lg",
-                    player.name === playerName 
-                      ? 'bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-300 shadow-lg' 
-                      : 'bg-white/60 backdrop-blur-sm border border-gray-200/50 hover:bg-white/80'
-                  )}>
-                    <div className="flex items-center gap-3 lg:gap-4">
+              </div>
+            </Card>
+          </div>
+          
+          {/* Leaderboard */}
+          <div className="order-1 lg:order-2 lg:col-span-1">
+            <Card className="shadow-2xl bg-white/80 backdrop-blur-sm border-2 border-gradient-to-r from-blue-400/30 to-purple-400/30 rounded-2xl hover:shadow-3xl transition-all duration-300">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3 text-lg lg:text-xl font-bold">
+                  <div className="p-2 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-full">
+                    <Trophy className="text-white h-4 w-4 lg:h-5 lg:w-5" />
+                  </div>
+                  <span className="bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+                    Bảng xếp hạng
+                  </span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3 lg:space-y-4 max-h-[40vh] lg:max-h-[calc(100vh-200px)] overflow-y-auto pr-2">
+                  {sortedPlayers.map((player, index) => (
+                    <li key={player.id} className={cn(
+                      "flex items-center justify-between p-3 lg:p-4 rounded-2xl transition-all duration-300 lg:hover:scale-[1.02] hover:shadow-lg",
+                      player.name === playerName 
+                        ? 'bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-300 shadow-lg' 
+                        : 'bg-white/60 backdrop-blur-sm border border-gray-200/50 hover:bg-white/80'
+                    )}>
+                      <div className="flex items-center gap-3 lg:gap-4">
                         <div className={cn(
                           "flex items-center justify-center w-6 h-6 lg:w-8 lg:h-8 rounded-full font-bold text-xs lg:text-sm",
                           index === 0 && "bg-gradient-to-r from-yellow-400 to-orange-400 text-white",
@@ -362,8 +323,8 @@ export default function QuizPage() {
                           {index < 3 ? <Star className="h-3 w-3 lg:h-4 lg:w-4" /> : index + 1}
                         </div>
                         <Avatar className="h-8 w-8 lg:h-10 lg:w-10 ring-2 ring-white shadow-lg">
-                            <AvatarImage src={player.avatar} alt={player.name} />
-                            <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
+                          <AvatarImage src={player.avatar} alt={player.name} />
+                          <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <div>
                           <p className="font-bold truncate max-w-[80px] lg:max-w-[120px] text-sm lg:text-base text-gray-800">{player.name}</p>
@@ -371,20 +332,50 @@ export default function QuizPage() {
                             <p className="text-xs text-blue-600 font-medium">Bạn</p>
                           )}
                         </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-bold text-lg lg:text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                        {player.score}
-                      </p>
-                      <p className="text-xs text-gray-500">điểm</p>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-lg lg:text-xl bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                          {player.score}
+                        </p>
+                        <p className="text-xs text-gray-500">điểm</p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
-    </div>
+      
+      {/* Fixed Submit Button at bottom */}
+      <div className="fixed left-0 right-0 bottom-0 z-50 p-4 lg:p-6 bg-white/95 backdrop-blur-md border-t border-blue-200/50 shadow-2xl">
+        <div className="max-w-7xl mx-auto flex justify-center">
+          <Button 
+            onClick={handleSubmitAnswer} 
+            disabled={!selectedAnswer || isAnswered} 
+            className={cn(
+              "w-full max-w-md h-14 lg:h-16 text-base lg:text-lg font-bold rounded-2xl transition-all duration-300 transform lg:hover:scale-[1.02] shadow-lg",
+              !selectedAnswer || isAnswered 
+                ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+                : "bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-xl hover:shadow-2xl"
+            )}
+            size="lg"
+          >
+            {isAnswered ? (
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                Đang chuyển câu tiếp theo...
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Zap className="h-4 w-4 lg:h-5 lg:w-5" />
+                Gửi câu trả lời
+              </div>
+            )}
+          </Button>
+        </div>
+      </div>
+    </>
   );
 }
