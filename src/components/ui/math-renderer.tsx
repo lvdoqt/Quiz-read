@@ -13,7 +13,7 @@ export function MathRenderer({ text }: MathRendererProps) {
   const parts = text.split(mathRegex);
 
   return (
-    <span className="inline-block">
+    <span className="inline-block text-gray-800">
       {parts.map((part, index) => {
         if (index % 2 === 1) {
           // This part is the math content inside the dollar signs
@@ -21,11 +21,11 @@ export function MathRenderer({ text }: MathRendererProps) {
             return <InlineMath key={index} math={part} />;
           } catch(e) {
             console.error("Katex parsing error for:", part, e)
-            return <span key={index} className='text-destructive'>${part}$</span>
+            return <span key={index} className='text-red-600 font-mono'>${part}$</span>
           }
         } else {
           // This part is the regular text
-          return <span key={index}>{part}</span>;
+          return <span key={index} className="text-gray-800">{part}</span>;
         }
       })}
     </span>

@@ -126,4 +126,18 @@
   .border-gradient-to-r {
     border-image: linear-gradient(to right, var(--tw-gradient-stops)) 1;
   }
+  
+  /* KaTeX styling for better visibility */
+  .katex {
+    color: #1f2937 !important;
+    font-size: 1em !important;
+  }
+  
+  .katex .base {
+    color: #1f2937 !important;
+  }
+  
+  .katex .mord, .katex .mop, .katex .mbin, .katex .mrel, .katex .mopen, .katex .mclose, .katex .mpunct {
+    color: #1f2937 !important;
+  }
 }
