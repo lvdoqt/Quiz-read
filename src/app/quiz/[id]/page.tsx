@@ -1,3 +1,4 @@
+```tsx
 "use client"
 
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
@@ -158,7 +159,7 @@ export default function QuizPage() {
         
         <div className="flex flex-col max-w-7xl mx-auto">
           {/* Question Card - Full width */}
-          <div className="order-1 perspective">
+          <div className="order-1 perspective min-h-[calc(100vh-160px)] lg:min-h-auto">
             <Card className={cn(
               "shadow-2xl w-full bg-white/80 backdrop-blur-sm flex flex-col transition-all duration-500 border-2 border-gradient-to-r from-blue-400/30 to-purple-400/30 hover:shadow-3xl lg:hover:scale-[1.02] lg:h-[calc(100vh-120px)]",
               isFlipping && "flip-card"
@@ -433,3 +434,4 @@ export default function QuizPage() {
     </>
   );
 }
+```
