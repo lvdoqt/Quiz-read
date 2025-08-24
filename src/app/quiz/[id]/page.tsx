@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Image from 'next/image'
 import { mockQuizQuestions, mockPlayers, Player, Question } from '@/lib/quiz-data'
@@ -10,18 +10,19 @@ import { Progress } from '@/components/ui/progress'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Trophy, Clock, CheckCircle, XCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { InlineMath, BlockMath } from 'react-katex';
+import { MathRenderer } from '@/components/ui/math-renderer'
 
 const QUIZ_DURATION_MINUTES = 15;
 
 function encodeState(state: any): string {
   try {
     const jsonString = JSON.stringify(state);
-    const encoded = btoa(encodeURIComponent(jsonString));
+    const encoded = btoa(encodeURIComponent(jsonString).replace(/%([0-9A-F]{2})/g, (match, p1) => {
+        return String.fromCharCode(parseInt(p1, 16));
+    }));
     return encoded;
   } catch (error) {
     console.error("Encoding failed:", error);
-    // Fallback or error handling
     return '';
   }
 }
@@ -31,13 +32,15 @@ export default function QuizPage() {
   const params = useParams()
   const quizId = params.id as string;
 
-  const [quizQuestions, setQuizQuestions] = useState<Question[]>(mockQuizQuestions);
+  const [quizQuestions, setQuizQuestions] = useState<Question[]>([]);
   const [playerName, setPlayerName] = useState('Người chơi')
   const [players, setPlayers] = useState<Player[]>([])
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
   const [isAnswered, setIsAnswered] = useState(false)
   const [timeLeft, setTimeLeft] = useState(QUIZ_DURATION_MINUTES * 60)
+  const [isFlipping, setIsFlipping] = useState(false);
+
 
   const currentQuestion = useMemo(() => quizQuestions[currentQuestionIndex], [currentQuestionIndex, quizQuestions])
 
@@ -46,10 +49,17 @@ export default function QuizPage() {
     if (storedQuiz) {
         try {
             const parsedQuestions = JSON.parse(storedQuiz);
-            setQuizQuestions(parsedQuestions);
+            if (Array.isArray(parsedQuestions) && parsedQuestions.length > 0) {
+              setQuizQuestions(parsedQuestions);
+            } else {
+              setQuizQuestions(mockQuizQuestions); // Fallback to mock
+            }
         } catch(e) {
             console.error("Failed to parse quiz from localStorage", e);
+            setQuizQuestions(mockQuizQuestions); // Fallback to mock
         }
+    } else {
+       setQuizQuestions(mockQuizQuestions); // Fallback to mock
     }
 
     const name = localStorage.getItem('playerName') || 'Khách'
@@ -57,6 +67,25 @@ export default function QuizPage() {
     const userPlayer: Player = { id: 'p1', name, score: 0, avatar: `https://robohash.org/${name.split(' ').join('') || 'guest'}.png?size=40x40&set=set4` }
     setPlayers([userPlayer, ...mockPlayers])
   }, [quizId])
+
+  const goToNextQuestion = useCallback(() => {
+    if (currentQuestionIndex < quizQuestions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+      setSelectedAnswer(null);
+      setIsAnswered(false);
+    } else {
+      router.push(`/quiz/${params.id}/results?finalState=${encodeState(players)}`);
+    }
+  }, [currentQuestionIndex, quizQuestions.length, router, params.id, players]);
+  
+  const handleNext = useCallback(() => {
+    setIsFlipping(true);
+    setTimeout(() => {
+      goToNextQuestion();
+      setIsFlipping(false);
+    }, 500); // Duration of the flip animation
+  }, [goToNextQuestion]);
+
 
   useEffect(() => {
     if (timeLeft <= 0) {
@@ -98,85 +127,87 @@ export default function QuizPage() {
       setPlayers(prev => prev.map(p => p.id === 'p1' ? { ...p, score: p.score + 10 } : p))
     }
 
-    setTimeout(() => {
-      if (currentQuestionIndex < quizQuestions.length - 1) {
-        setCurrentQuestionIndex(prev => prev + 1)
-        setSelectedAnswer(null)
-        setIsAnswered(false)
-      } else {
-        router.push(`/quiz/${params.id}/results?finalState=${encodeState(players)}`)
-      }
-    }, 2000)
+    setTimeout(handleNext, 2000)
   }
   
   const sortedPlayers = useMemo(() => [...players].sort((a, b) => b.score - a.score), [players])
 
   if (!currentQuestion) {
-    return <div>Đang tải Quiz...</div>
+    return <div className="flex items-center justify-center min-h-screen">Đang tải Quiz...</div>
   }
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6 md:p-8">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-        <div className="lg:col-span-2">
-          <Card className="shadow-lg">
-            <CardHeader>
-              <div className="flex justify-between items-center mb-4">
-                <p className="text-sm text-muted-foreground">Câu hỏi {currentQuestionIndex + 1} trên {quizQuestions.length}</p>
-                <div className="flex items-center gap-2 bg-muted px-3 py-1 rounded-full text-sm font-semibold">
-                  <Clock className="h-4 w-4" />
-                  <span>{Math.floor(timeLeft / 60)}:{('0' + (timeLeft % 60)).slice(-2)}</span>
+        <div className="lg:col-span-2 perspective">
+          <Card className={cn("shadow-lg w-full h-full transition-transform duration-500", isFlipping && "flip-card")}>
+            <div className='card-face card-front'>
+              <CardHeader>
+                <div className="flex justify-between items-center mb-4">
+                  <p className="text-sm text-muted-foreground">Câu hỏi {currentQuestionIndex + 1} trên {quizQuestions.length}</p>
+                  <div className="flex items-center gap-2 bg-muted px-3 py-1 rounded-full text-sm font-semibold">
+                    <Clock className="h-4 w-4" />
+                    <span>{Math.floor(timeLeft / 60)}:{('0' + (timeLeft % 60)).slice(-2)}</span>
+                  </div>
                 </div>
-              </div>
-              <Progress value={((currentQuestionIndex + 1) / quizQuestions.length) * 100} className="w-full" />
-              {currentQuestion.image && (
-                <div className="mt-4 relative w-full h-64">
-                   <Image 
-                      src={currentQuestion.image} 
-                      alt={`Hình ảnh cho câu hỏi ${currentQuestionIndex + 1}`} 
-                      fill
-                      style={{ objectFit: 'contain' }}
-                      className="rounded-md"
-                      data-ai-hint="math problem"
-                    />
-                </div>
-              )}
-              <CardTitle className="pt-6 text-2xl md:text-3xl font-headline">
-                <BlockMath math={currentQuestion.text} />
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {currentQuestion.options.map((option, i) => {
-                  const isCorrect = option === currentQuestion.correctAnswer
-                  const isSelected = selectedAnswer === option
-                  
-                  return (
-                    <Button
-                      key={i}
-                      variant="outline"
-                      className={cn(
-                        "h-auto justify-start p-4 text-base md:text-lg text-left whitespace-normal transition-all duration-300",
-                        isSelected && !isAnswered && "ring-2 ring-primary border-primary",
-                        isAnswered && isCorrect && "bg-green-500/30 border-green-500 text-foreground hover:bg-green-500/40",
-                        isAnswered && isSelected && !isCorrect && "bg-destructive/20 border-destructive text-destructive-foreground hover:bg-destructive/30"
-                      )}
-                      onClick={() => handleAnswerSelect(option)}
-                      disabled={isAnswered}
-                    >
-                        <div className="flex items-center w-full">
-                            {isAnswered && isCorrect && <CheckCircle className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />}
-                            {isAnswered && isSelected && !isCorrect && <XCircle className="mr-2 h-5 w-5 flex-shrink-0" />}
-                            <span className="flex-1 text-left"><InlineMath math={option} /></span>
+                <Progress value={((currentQuestionIndex + 1) / quizQuestions.length) * 100} className="w-full" />
+                
+                <div className="mt-6 p-4 rounded-lg bg-muted/30 border-2 border-primary/30 min-h-[120px]">
+                    {currentQuestion.image && (
+                        <div className="mb-4 relative w-full h-64">
+                        <Image 
+                            src={currentQuestion.image} 
+                            alt={`Hình ảnh cho câu hỏi ${currentQuestionIndex + 1}`} 
+                            fill
+                            style={{ objectFit: 'contain' }}
+                            className="rounded-md"
+                            data-ai-hint="math problem"
+                        />
                         </div>
-                    </Button>
-                  )
-                })}
-              </div>
-              <Button onClick={handleSubmitAnswer} disabled={!selectedAnswer || isAnswered} className="w-full mt-8" size="lg">
-                {isAnswered ? 'Vui lòng đợi...' : 'Gửi câu trả lời'}
-              </Button>
-            </CardContent>
+                    )}
+                    <CardTitle className="text-xl md:text-2xl font-headline">
+                        <MathRenderer text={currentQuestion.text} />
+                    </CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {currentQuestion.options.map((option, i) => {
+                    const isCorrect = option === currentQuestion.correctAnswer
+                    const isSelected = selectedAnswer === option
+                    
+                    return (
+                      <Button
+                        key={i}
+                        variant="outline"
+                        className={cn(
+                          "h-auto justify-start p-4 text-base md:text-lg text-left whitespace-normal transition-all duration-300",
+                          isSelected && !isAnswered && "ring-2 ring-primary border-primary",
+                          isAnswered && isCorrect && "bg-green-500/30 border-green-500 text-foreground hover:bg-green-500/40",
+                          isAnswered && isSelected && !isCorrect && "bg-destructive/20 border-destructive text-destructive-foreground hover:bg-destructive/30"
+                        )}
+                        onClick={() => handleAnswerSelect(option)}
+                        disabled={isAnswered}
+                      >
+                          <div className="flex items-center w-full">
+                              {isAnswered && isCorrect && <CheckCircle className="mr-3 h-6 w-6 flex-shrink-0 text-green-500" />}
+                              {isAnswered && isSelected && !isCorrect && <XCircle className="mr-3 h-6 w-6 flex-shrink-0" />}
+                              <span className="flex-1 text-left"><MathRenderer text={option} /></span>
+                          </div>
+                      </Button>
+                    )
+                  })}
+                </div>
+                <Button onClick={handleSubmitAnswer} disabled={!selectedAnswer || isAnswered} className="w-full mt-8" size="lg">
+                  {isAnswered ? 'Vui lòng đợi...' : 'Gửi câu trả lời'}
+                </Button>
+              </CardContent>
+            </div>
+            <div className='card-face card-back'>
+                <div className="flex items-center justify-center h-full">
+                    <p className="text-2xl font-bold">Chuẩn bị câu hỏi tiếp theo...</p>
+                </div>
+            </div>
           </Card>
         </div>
 

@@ -81,4 +81,20 @@
   body {
     @apply bg-background text-foreground;
   }
+  .perspective {
+    perspective: 1000px;
+  }
+  .card-face {
+    @apply w-full h-full absolute backface-hidden;
+  }
+  .card-front {
+    @apply z-10;
+  }
+  .card-back {
+    @apply transform rotate-y-180;
+  }
+  .flip-card {
+    @apply transform-style-3d;
+    transform: rotateY(180deg);
+  }
 }
