@@ -148,7 +148,7 @@ export default function QuizPage() {
   return (
     <>
       {/* Main content with padding bottom to prevent overlap with fixed button */}
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4 sm:p-6 md:p-8 relative pb-32 lg:pb-24">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-4 sm:p-6 md:p-8 relative pb-28 lg:pb-24">
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-3xl animate-pulse"></div>
@@ -158,7 +158,7 @@ export default function QuizPage() {
         
         <div className="flex flex-col lg:grid lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto">
           {/* Question Card */}
-          <div className="order-2 lg:order-1 lg:col-span-2 perspective">
+          <div className="order-1 lg:order-1 lg:col-span-2 perspective">
             <Card className={cn(
               "shadow-2xl w-full bg-white/80 backdrop-blur-sm flex flex-col transition-all duration-500 border-2 border-gradient-to-r from-blue-400/30 to-purple-400/30 hover:shadow-3xl lg:hover:scale-[1.02]",
               isFlipping && "flip-card"
@@ -220,7 +220,7 @@ export default function QuizPage() {
 
                   {/* Answer Options Section - with proper spacing */}
                   <div className="flex-grow">
-                    <div className="grid grid-cols-1 gap-4 mb-6">
+                    <div className="grid grid-cols-1 gap-3 lg:gap-4 mb-4">
                       {currentQuestion.options.map((option, i) => {
                         const isCorrect = option === currentQuestion.correctAnswer
                         const isSelected = selectedAnswer === option
@@ -231,7 +231,7 @@ export default function QuizPage() {
                             key={i}
                             variant="outline"
                             className={cn(
-                              "group relative h-auto justify-start p-4 lg:p-5 text-sm lg:text-base text-left whitespace-normal transition-all duration-500 transform lg:hover:scale-[1.02] hover:shadow-lg min-h-[60px]",
+                              "group relative h-auto justify-start p-3 lg:p-4 text-sm lg:text-base text-left whitespace-normal transition-all duration-500 transform lg:hover:scale-[1.02] hover:shadow-lg min-h-[50px] lg:min-h-[60px]",
                               "bg-white/80 backdrop-blur-sm border-2 border-gray-200/50 hover:border-blue-300/50 rounded-2xl",
                               isSelected && !isAnswered && "ring-4 ring-blue-400/50 border-blue-400 bg-gradient-to-r from-blue-50 to-purple-50 shadow-lg lg:scale-[1.02]",
                               isAnswered && isCorrect && "bg-gradient-to-r from-green-400/20 to-emerald-400/20 border-green-400 text-foreground hover:from-green-400/30 hover:to-emerald-400/30 shadow-lg animate-pulse",
@@ -243,16 +243,16 @@ export default function QuizPage() {
                           >
                             <div className="flex items-center w-full">
                               <div className={cn(
-                                "flex items-center justify-center w-8 h-8 lg:w-10 lg:h-10 rounded-full mr-4 flex-shrink-0 font-bold text-sm lg:text-base transition-all duration-300",
+                                "flex items-center justify-center w-6 h-6 lg:w-8 lg:h-8 rounded-full mr-3 lg:mr-4 flex-shrink-0 font-bold text-xs lg:text-sm transition-all duration-300",
                                 isSelected && !isAnswered && "bg-blue-500 text-white",
                                 isAnswered && isCorrect && "bg-green-500 text-white",
                                 isAnswered && isSelected && !isCorrect && "bg-red-500 text-white",
                                 !isSelected && !isAnswered && "bg-gray-200 text-gray-600 lg:group-hover:bg-blue-100 lg:group-hover:text-blue-600"
                               )}>
                                 {isAnswered && isCorrect ? (
-                                  <CheckCircle className="h-5 w-5 lg:h-6 lg:w-6" />
+                                  <CheckCircle className="h-3 w-3 lg:h-4 lg:w-4" />
                                 ) : isAnswered && isSelected && !isCorrect ? (
-                                  <XCircle className="h-5 w-5 lg:h-6 lg:w-6" />
+                                  <XCircle className="h-3 w-3 lg:h-4 lg:w-4" />
                                 ) : (
                                   optionLabels[i]
                                 )}
@@ -291,7 +291,7 @@ export default function QuizPage() {
           </div>
           
           {/* Leaderboard */}
-          <div className="order-1 lg:order-2 lg:col-span-1">
+          <div className="order-2 lg:order-2 lg:col-span-1">
             <Card className="shadow-2xl bg-white/80 backdrop-blur-sm border-2 border-gradient-to-r from-blue-400/30 to-purple-400/30 rounded-2xl hover:shadow-3xl transition-all duration-300">
               <CardHeader>
                 <CardTitle className="flex items-center gap-3 text-lg lg:text-xl font-bold">
