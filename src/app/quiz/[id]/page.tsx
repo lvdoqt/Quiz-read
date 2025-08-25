@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Image from 'next/image'
 import { Player, Question, QuizData } from '@/lib/quiz-data'
@@ -8,19 +8,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Trophy, Clock, CheckCircle, XCircle, Zap, Star, Target, Loader2, Home, AlertTriangle } from 'lucide-react'
+import { Trophy, Clock, CheckCircle, XCircle, Zap, Star, Target, Loader2, Home, AlertTriangle, User } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { MathRenderer } from '@/components/ui/math-renderer'
 import { db } from '@/lib/firebase'
 import { doc, getDoc, collection, onSnapshot, setDoc, addDoc, serverTimestamp, query, orderBy } from "firebase/firestore";
-import { useToast } from '@/hooks/use-toast'
-
 
 export default function QuizPage() {
   const router = useRouter();
   const params = useParams();
   const quizId = params.id as string;
-  const { toast } = useToast();
 
   const [quizData, setQuizData] = useState<QuizData | null>(null);
   const [playerName, setPlayerName] = useState('Người chơi');
@@ -87,6 +84,9 @@ export default function QuizPage() {
         playersList.push({ id: doc.id, ...doc.data() } as Player);
       });
       setPlayers(playersList);
+    }, (err) => {
+        console.error("Snapshot listener error:", err);
+        setError("Lỗi kết nối tới bảng xếp hạng.");
     });
 
     return () => unsubscribe();
@@ -166,10 +166,14 @@ export default function QuizPage() {
       <div className="w-full max-w-7xl">
         {/* Header */}
         <div className="mb-4">
-          <div className="flex justify-between items-center mb-2">
+          <div className="flex justify-between items-center mb-2 flex-wrap gap-2">
             <div className="flex items-center gap-2 bg-muted px-3 py-1.5 rounded-full text-sm font-bold">
               <Target className="h-4 w-4 text-primary" />
               <span>Câu {currentQuestionIndex + 1}/{quizData?.questions.length}</span>
+            </div>
+            <div className="flex items-center gap-2 text-muted-foreground font-semibold">
+                <User className="h-4 w-4" />
+                <span>{playerName}</span>
             </div>
             {streak > 1 && (
               <div className="flex items-center gap-1 bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-xs font-bold animate-bounce">
@@ -229,11 +233,10 @@ export default function QuizPage() {
                         variant="outline"
                         className={cn(
                           "group h-auto justify-start p-3 text-sm text-left whitespace-normal transition-all duration-300 transform hover:scale-[1.02] hover:shadow-md min-h-[50px] rounded-lg",
-                          "bg-green-50 border-2 border-green-100 hover:border-green-400 hover:bg-green-100 text-foreground",
+                          "bg-green-50 border-2 border-green-100 text-foreground hover:bg-green-100 hover:text-green-800",
                           isSelected && !isAnswered && "ring-4 ring-blue-300 border-blue-400 bg-blue-50",
-                          isAnswered && isCorrect && "bg-green-100 border-green-500 text-foreground animate-pulse",
-                          isAnswered && isSelected && !isCorrect && "bg-red-100 border-red-500 text-foreground animate-shake",
-                          !isAnswered && "hover:text-green-800"
+                          isAnswered && isCorrect && "bg-green-100 border-green-500 text-green-800 animate-pulse",
+                          isAnswered && isSelected && !isCorrect && "bg-red-100 border-red-500 text-red-800 animate-shake",
                         )}
                         onClick={() => setSelectedAnswer(option)}
                         disabled={isAnswered}
@@ -254,13 +257,39 @@ export default function QuizPage() {
                               optionLabels[i]
                             )}
                           </div>
-                          <span className={cn("flex-1 text-left font-medium leading-tight", !isAnswered && "group-hover:text-green-800")}>
+                          <span className="flex-1 text-left font-medium leading-tight">
                             <MathRenderer text={option} />
                           </span>
                         </div>
                       </Button>
                     )
                   })}
+                </div>
+                 {/* Footer Submit Button - Moved inside the card for better mobile layout */}
+                <div className="w-full mt-6">
+                    <Button 
+                    onClick={handleSubmitAnswer} 
+                    disabled={!selectedAnswer || isAnswered} 
+                    className={cn(
+                        "w-full h-14 text-lg font-bold rounded-xl transition-all duration-300 transform hover:scale-[1.01] shadow-lg",
+                        !selectedAnswer || isAnswered 
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
+                        : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-xl hover:shadow-2xl"
+                    )}
+                    size="lg"
+                    >
+                    {isAnswered ? (
+                        <div className="flex items-center gap-2">
+                        <Loader2 className="w-5 h-5 animate-spin"/>
+                        Đang chuyển câu tiếp theo...
+                        </div>
+                    ) : (
+                        <div className="flex items-center gap-2">
+                        <Zap className="h-5 w-5" />
+                        Gửi câu trả lời
+                        </div>
+                    )}
+                    </Button>
                 </div>
               </CardContent>
             </Card>
@@ -300,12 +329,7 @@ export default function QuizPage() {
                           <AvatarImage src={player.avatar} alt={player.name} />
                           <AvatarFallback>{player.name.charAt(0)}</AvatarFallback>
                         </Avatar>
-                        <div>
-                          <p className="font-bold truncate max-w-[120px] text-sm text-gray-800">{player.name}</p>
-                          {isCurrentUser && (
-                            <p className="text-xs text-blue-600 font-medium">Bạn</p>
-                          )}
-                        </div>
+                        <p className="font-bold truncate max-w-[150px] text-sm text-gray-800">{player.name}</p>
                       </div>
                       <div className="text-right">
                         <p className="font-bold text-lg text-primary">
@@ -319,33 +343,6 @@ export default function QuizPage() {
             </Card>
           </div>
         </div>
-      </div>
-      
-      {/* Footer Submit Button */}
-      <div className="w-full max-w-7xl mt-auto pt-6">
-        <Button 
-          onClick={handleSubmitAnswer} 
-          disabled={!selectedAnswer || isAnswered} 
-          className={cn(
-            "w-full h-14 text-lg font-bold rounded-xl transition-all duration-300 transform hover:scale-[1.01] shadow-lg",
-            !selectedAnswer || isAnswered 
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed" 
-              : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-xl hover:shadow-2xl"
-          )}
-          size="lg"
-        >
-          {isAnswered ? (
-            <div className="flex items-center gap-2">
-              <Loader2 className="w-5 h-5 animate-spin"/>
-              Đang chuyển câu tiếp theo...
-            </div>
-          ) : (
-            <div className="flex items-center gap-2">
-              <Zap className="h-5 w-5" />
-              Gửi câu trả lời
-            </div>
-          )}
-        </Button>
       </div>
     </div>
   );
