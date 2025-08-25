@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { BrainCircuit, LogIn } from 'lucide-react';
+import { BrainCircuit, LogIn, Loader2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import { signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { auth } from '@/lib/firebase';
