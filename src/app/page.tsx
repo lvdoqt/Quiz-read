@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Gamepad2, BrainCircuit, School, Trophy } from 'lucide-react'
+import { Gamepad2, Trophy, School } from 'lucide-react'
 import Image from 'next/image'
 
 
@@ -26,11 +26,9 @@ export default function Home() {
     <main className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8">
       <div className="text-center mb-10">
         <div className="flex justify-center items-center gap-4 mb-2">
-  <Trophy className="h-16 w-16 text-yellow-500" />
-  <h1 className="text-6xl font-bold font-headline bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-500">
-  Đấu trường Quiz
-</h1>
-</div>
+            <Trophy className="h-16 w-16 text-primary" />
+            <h1 className="text-6xl font-bold font-headline text-gray-800">Đấu trường Quiz</h1>
+        </div>
         <p className="text-gray-500 text-xl">Chiến trường đố vui thời gian thực đỉnh cao.</p>
       </div>
 
@@ -42,7 +40,7 @@ export default function Home() {
               <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-2">
                  <Gamepad2 className="h-10 w-10 text-primary" />
               </div>
-              <CardTitle className="text-3xl font-bold text-blue-600">Vào phòng thi</CardTitle>
+              <CardTitle className="text-3xl font-bold">Vào phòng thi</CardTitle>
               <CardDescription>Nhập mã quiz và tên của bạn để bắt đầu.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6 px-8">
@@ -91,11 +89,11 @@ export default function Home() {
                <div className="mx-auto bg-red-500/10 p-3 rounded-full w-fit mb-2">
                  <School className="h-10 w-10 text-red-500" />
               </div>
-              <CardTitle className="text-3xl font-bold text-red-400">Khu vực Giáo viên</CardTitle>
+              <CardTitle className="text-3xl font-bold">Khu vực Giáo viên</CardTitle>
               <CardDescription>Tạo và quản lý các bài quiz của bạn.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-6 px-8 flex-grow">
-               <div className="relative h-full">
+            <CardContent className="space-y-4 px-8 flex-grow flex flex-col">
+               <div className="relative">
                 <Image 
                   src="https://lop12.com/wp-content/uploads/2025/08/teacher-quiz.jpg" 
                   alt="Giáo viên tạo quiz" 
@@ -105,19 +103,19 @@ export default function Home() {
                   data-ai-hint="teacher laptop classroom"
                 />
               </div>
-       <div className="text-center text-gray-600 mt-4">
+              <div className="text-center text-gray-600 mt-4">
                 <p className="text-base">
-                  Chào mừng đến với <span className="font-bold text-primary">Đấu trường Quiz</span>! Nền tảng cho phép giáo viên dễ dàng tạo ra các cuộc thi trắc nghiệm hấp dẫn cho nhiều học sinh cùng làm nhìn thấy kết quả theo thời gian thực.
+                  Chào mừng đến với <span className="font-bold text-primary">Đấu trường Quiz</span>! Nền tảng cho phép giáo viên dễ dàng tạo ra các cuộc thi trắc nghiệm hấp dẫn.
                 </p>
                 <p className="text-sm mt-2">
-                  Tự động tạo câu hỏi bằng AI, quản lý bài thi và theo dõi kết quả của học sinh trong thời gian thực - thúc đẩy sự hứng thú học tập của các em học sinh.
+                  Tự động tạo câu hỏi bằng AI, quản lý bài thi và theo dõi kết quả của học sinh trong thời gian thực.
                 </p>
-         <p className="text-base">
+                <p className="text-base">
                   <span className="font-bold text-primary">Liên hệ: Thầy Đồ - lvdoqt@gmail.com</span>
                 </p>
               </div>
             </CardContent>
-             <CardFooter className="p-8">
+             <CardFooter className="p-8 mt-auto">
                 <Button variant="destructive" onClick={() => router.push('/teacher/login')} className="w-full text-lg h-14 rounded-xl">
                   Truy cập
                 </Button>
