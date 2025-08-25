@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { PlusCircle, Trash2, Pencil, LogOut, BrainCircuit } from 'lucide-react'
+import { PlusCircle, Trash2, Pencil, LogOut, BrainCircuit, Loader2 } from 'lucide-react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,6 +15,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { db } from '@/lib/firebase';
+import { useToast } from '@/hooks/use-toast';
 
 interface StoredQuiz {
   code: string;
@@ -24,34 +27,58 @@ interface StoredQuiz {
 export default function TeacherDashboard() {
   const router = useRouter()
   const [quizzes, setQuizzes] = useState<StoredQuiz[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { toast } = useToast();
 
   useEffect(() => {
-    const loadedQuizzes: StoredQuiz[] = [];
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key && key.startsWith('quiz-')) {
-        try {
-          const quizData = JSON.parse(localStorage.getItem(key) || '[]');
+    const fetchQuizzes = async () => {
+      setIsLoading(true);
+      try {
+        const querySnapshot = await getDocs(collection(db, "quizzes"));
+        const loadedQuizzes: StoredQuiz[] = [];
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
           loadedQuizzes.push({
-            code: key.replace('quiz-', ''),
-            questionCount: quizData.length
+            code: doc.id,
+            questionCount: data.questions?.length || 0,
           });
-        } catch (e) {
-            console.error("Could not parse quiz from local storage", e)
-        }
+        });
+        setQuizzes(loadedQuizzes);
+      } catch (error) {
+        console.error("Error fetching quizzes: ", error);
+        toast({
+          variant: "destructive",
+          title: "Lỗi tải danh sách quiz",
+          description: "Không thể kết nối đến cơ sở dữ liệu."
+        })
+      } finally {
+        setIsLoading(false);
       }
     }
-    setQuizzes(loadedQuizzes);
-  }, []);
+    fetchQuizzes();
+  }, [toast]);
   
   const handleLogout = () => {
     localStorage.removeItem('teacherLoggedIn');
     router.push('/teacher/login');
   };
 
-  const deleteQuiz = (quizCode: string) => {
-    localStorage.removeItem(`quiz-${quizCode}`);
-    setQuizzes(quizzes.filter(q => q.code !== quizCode));
+  const deleteQuiz = async (quizCode: string) => {
+    try {
+      await deleteDoc(doc(db, "quizzes", quizCode));
+      setQuizzes(quizzes.filter(q => q.code !== quizCode));
+      toast({
+        title: "Xóa thành công!",
+        description: `Đã xóa quiz có mã ${quizCode}.`
+      })
+    } catch(error) {
+      console.error("Error deleting quiz: ", error);
+      toast({
+        variant: "destructive",
+        title: "Lỗi xóa quiz",
+        description: "Đã có lỗi xảy ra. Vui lòng thử lại."
+      })
+    }
   };
 
 
@@ -91,7 +118,11 @@ export default function TeacherDashboard() {
                     <CardDescription>Xem và quản lý các quiz bạn đã tạo.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                    {quizzes.length > 0 ? (
+                    {isLoading ? (
+                      <div className="flex justify-center items-center h-40">
+                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                      </div>
+                    ) : quizzes.length > 0 ? (
                         <div className="space-y-3 max-h-96 overflow-y-auto">
                             {quizzes.map(quiz => (
                                 <div key={quiz.code} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
@@ -100,7 +131,7 @@ export default function TeacherDashboard() {
                                         <p className="text-sm text-muted-foreground">{quiz.questionCount} câu hỏi</p>
                                     </div>
                                     <div className="flex gap-2">
-                                        <Button variant="outline" size="icon" disabled>
+                                        <Button variant="outline" size="icon" onClick={() => router.push(`/teacher/edit/${quiz.code}`)}>
                                             <Pencil className="h-4 w-4" />
                                             <span className="sr-only">Sửa</span>
                                         </Button>

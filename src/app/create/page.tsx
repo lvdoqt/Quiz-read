@@ -8,9 +8,10 @@ import { Label } from "@/components/ui/label"
 import { ArrowLeft, Wand2, Upload, Bot, Loader2, FileJson, Pencil } from 'lucide-react'
 import { useToast } from "@/hooks/use-toast"
 import { Question } from '@/lib/quiz-data'
-import { Textarea } from '@/components/ui/textarea'
 import { generateQuiz } from '@/ai/flows/quiz-generator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { doc, setDoc } from "firebase/firestore";
+import { db } from '@/lib/firebase';
 
 export default function CreateQuizPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -19,6 +20,7 @@ export default function CreateQuizPage() {
   const [numQuestions, setNumQuestions] = useState(5);
   const [duration, setDuration] = useState(10);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('ai');
   const router = useRouter();
   const { toast } = useToast();
@@ -36,6 +38,7 @@ export default function CreateQuizPage() {
             
             if (Array.isArray(parsedQuestions) && parsedQuestions.every(q => q.text && q.options && q.correctAnswer)) {
               setQuestions(parsedQuestions);
+              setNumQuestions(parsedQuestions.length);
               setFileName(file.name);
                toast({
                 title: "Tải tệp thành công!",
@@ -100,7 +103,7 @@ export default function CreateQuizPage() {
     }
   };
 
-  const handleCreateQuiz = () => {
+  const handleCreateQuiz = async () => {
     if (questions.length === 0) {
       toast({
         variant: "destructive",
@@ -109,6 +112,7 @@ export default function CreateQuizPage() {
       });
       return;
     }
+    setIsSaving(true);
     const quizCode = Math.floor(1000 + Math.random() * 9000).toString();
     const quizData = {
       questions,
@@ -116,14 +120,24 @@ export default function CreateQuizPage() {
       totalQuestions: questions.length
     };
     
-    localStorage.setItem(`quiz-${quizCode}`, JSON.stringify(quizData));
-
-    toast({
-      title: "Tạo Quiz thành công!",
-      description: `Mã quiz của bạn là: ${quizCode}. Hãy chia sẻ với học sinh của bạn!`,
-      duration: 10000,
-    });
-     router.push('/teacher/dashboard');
+    try {
+        await setDoc(doc(db, "quizzes", quizCode), quizData);
+        toast({
+            title: "Tạo Quiz thành công!",
+            description: `Mã quiz của bạn là: ${quizCode}. Hãy chia sẻ với học sinh của bạn!`,
+            duration: 10000,
+        });
+        router.push('/teacher/dashboard');
+    } catch(error) {
+        console.error("Error creating quiz:", error);
+        toast({
+            variant: "destructive",
+            title: "Lỗi lưu Quiz",
+            description: "Không thể lưu quiz lên cơ sở dữ liệu. Vui lòng thử lại."
+        })
+    } finally {
+        setIsSaving(false);
+    }
   };
 
   return (
@@ -217,9 +231,9 @@ export default function CreateQuizPage() {
                       </div>
                     )}
 
-                    <Button onClick={handleCreateQuiz} className="w-full mt-6" size="lg" disabled={questions.length === 0}>
-                        <Wand2 className="mr-2 h-5 w-5" />
-                        Lưu và Tạo Quiz
+                    <Button onClick={handleCreateQuiz} className="w-full mt-6" size="lg" disabled={questions.length === 0 || isSaving}>
+                        {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Wand2 className="mr-2 h-5 w-5" />}
+                        {isSaving ? "Đang lưu..." : "Lưu và Tạo Quiz"}
                     </Button>
                 </CardContent>
             </Card>

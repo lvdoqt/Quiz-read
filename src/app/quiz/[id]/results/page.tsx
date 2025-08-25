@@ -1,58 +1,63 @@
 "use client"
 
 import { useEffect, useState, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useRouter, useParams, useSearchParams } from 'next/navigation'
 import { Player } from '@/lib/quiz-data'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Trophy, Award, Home } from 'lucide-react'
+import { Trophy, Award, Home, Loader2 } from 'lucide-react'
 import { Confetti } from '@/components/ui/confetti'
 import { cn } from '@/lib/utils'
-
-function decodeState(encodedState: string): any {
-    try {
-        const decoded = decodeURIComponent(atob(encodedState));
-        return JSON.parse(decoded);
-    } catch (error) {
-        console.error("Failed to decode state:", error);
-        return null;
-    }
-}
-
+import { db } from '@/lib/firebase'
+import { collection, getDocs, query, orderBy } from 'firebase/firestore'
 
 function ResultsContent() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const [players, setPlayers] = useState<Player[]>([])
-  const [playerName, setPlayerName] = useState('')
+  const router = useRouter();
+  const params = useParams();
+  const quizId = params.id as string;
+
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [playerName, setPlayerName] = useState('');
 
   useEffect(() => {
-    const finalState = searchParams.get('finalState')
     // Always get the most recent player name from localStorage
     const name = typeof window !== 'undefined' ? localStorage.getItem('playerName') || 'Khách' : 'Khách';
-    setPlayerName(name)
-    if (finalState) {
-      const decodedState = decodeState(finalState)
-      if (decodedState) {
-        const sorted = (decodedState as Player[]).sort((a, b) => b.score - a.score)
-        setPlayers(sorted)
-      } else {
-        console.error("Không thể phân tích trạng thái cuối cùng")
-        router.push('/')
-      }
-    } else {
-      router.push('/')
+    setPlayerName(name);
+
+    if (!quizId) {
+        router.push('/');
+        return;
+    };
+
+    const fetchResults = async () => {
+        setIsLoading(true);
+        const playersColRef = collection(db, "quizzes", quizId, "players");
+        const q = query(playersColRef, orderBy("score", "desc"), orderBy("name"));
+        const querySnapshot = await getDocs(q);
+
+        const playersList: Player[] = [];
+        querySnapshot.forEach((doc) => {
+            playersList.push({ id: doc.id, ...doc.data() } as Player);
+        });
+        
+        setPlayers(playersList);
+        setIsLoading(false);
     }
-  }, [searchParams, router])
+    
+    fetchResults();
 
-  const userResult = players.find(p => p.name === playerName)
-  const userRank = userResult ? players.findIndex(p => p.id === userResult.id) + 1 : 0
+  }, [quizId, router]);
 
-  if (players.length === 0) {
+  const userResult = players.find(p => p.name === playerName);
+  const userRank = userResult ? players.findIndex(p => p.id === userResult.id) + 1 : 0;
+
+  if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p>Đang tải kết quả...</p>
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="ml-4 text-lg text-muted-foreground">Đang tải kết quả...</p>
       </div>
     )
   }
