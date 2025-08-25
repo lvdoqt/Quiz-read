@@ -105,8 +105,8 @@ export default function Home() {
                   data-ai-hint="teacher laptop classroom"
                 />
               </div>
-        <Label className="text-base font-semibold text-gray-700">Giáo viên cần sử dụng liên hệ: lvdoqt@gmail.com<br>(c) Quiz Arena - Thầy Đồ - 2025.<br></Label>
-             
+        <CardDescription>Giáo viên cần sử dụng liên hệ: lvdoqt@gmail.com<br/>(c) Quiz Arena - Thầy Đồ - 2025.<br/></CardDescription>
+          
             </CardContent>
              <CardFooter className="p-8">
                 <Button variant="destructive" onClick={() => router.push('/teacher/login')} className="w-full text-lg h-14 rounded-xl">
