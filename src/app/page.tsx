@@ -26,9 +26,13 @@ export default function Home() {
     <main className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8">
       <div className="text-center mb-10">
         <div className="flex justify-center items-center gap-4 mb-2">
-            <BrainCircuit className="h-16 w-16 text-primary" />
-            <h1 className="text-6xl font-bold font-headline text-gray-800">Đấu trường Quiz</h1>
-        </div>
+  {/* Icon đấu trường */}
+  <Trophy className="h-16 w-16 text-yellow-500" />
+  {/* Chữ Đấu trường Quiz màu đỏ */}
+  <h1 className="text-6xl font-bold font-headline text-red-600">
+    Đấu trường Quiz
+  </h1>
+</div>
         <p className="text-gray-500 text-xl">Chiến trường đố vui thời gian thực đỉnh cao.</p>
       </div>
 
@@ -40,13 +44,13 @@ export default function Home() {
               <div className="mx-auto bg-primary/10 p-3 rounded-full w-fit mb-2">
                  <Gamepad2 className="h-10 w-10 text-primary" />
               </div>
-              <CardTitle className="text-3xl font-bold">Vào phòng thi</CardTitle>
+              <CardTitle className="text-3xl font-bold text-blue-600">Vào phòng thi</CardTitle>
               <CardDescription>Nhập mã quiz và tên của bạn để bắt đầu.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6 px-8">
               <div className="relative">
                 <Image 
-                  src="https://placehold.co/600x400.png" 
+                  src="https://lop12.com/wp-content/uploads/2025/08/Quiz-Game-Arena.png" 
                   alt="Học sinh tham gia quiz" 
                   width={600}
                   height={400}
@@ -89,13 +93,13 @@ export default function Home() {
                <div className="mx-auto bg-red-500/10 p-3 rounded-full w-fit mb-2">
                  <School className="h-10 w-10 text-red-500" />
               </div>
-              <CardTitle className="text-3xl font-bold">Khu vực Giáo viên</CardTitle>
+              <CardTitle className="text-3xl font-bold text-red-400">Khu vực Giáo viên</CardTitle>
               <CardDescription>Tạo và quản lý các bài quiz của bạn.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6 px-8 flex-grow">
                <div className="relative h-full">
                 <Image 
-                  src="https://placehold.co/600x400.png" 
+                  src="https://lop12.com/wp-content/uploads/2025/08/teacher-quiz.jpg" 
                   alt="Giáo viên tạo quiz" 
                   width={600}
                   height={400}
@@ -103,6 +107,7 @@ export default function Home() {
                   data-ai-hint="teacher laptop classroom"
                 />
               </div>
+              <CardDescription>Giáo viên cần sử dụng liên hệ: lvdoqt@gmail.com<br/>(c) Quiz Arena - Thầy Đồ - 2025.</CardDescription>
             </CardContent>
              <CardFooter className="p-8">
                 <Button variant="destructive" onClick={() => router.push('/teacher/login')} className="w-full text-lg h-14 rounded-xl">
