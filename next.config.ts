@@ -28,6 +28,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'lop12.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
 };
