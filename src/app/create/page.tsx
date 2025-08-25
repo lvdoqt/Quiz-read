@@ -5,13 +5,21 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowLeft, Wand2, Upload } from 'lucide-react'
+import { ArrowLeft, Wand2, Upload, Bot, Loader2, FileJson, Pencil } from 'lucide-react'
 import { useToast } from "@/hooks/use-toast"
 import { Question } from '@/lib/quiz-data'
+import { Textarea } from '@/components/ui/textarea'
+import { generateQuiz } from '@/ai/flows/quiz-generator'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function CreateQuizPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [fileName, setFileName] = useState('');
+  const [topic, setTopic] = useState('');
+  const [numQuestions, setNumQuestions] = useState(5);
+  const [duration, setDuration] = useState(10);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [activeTab, setActiveTab] = useState('ai');
   const router = useRouter();
   const { toast } = useToast();
 
@@ -23,8 +31,9 @@ export default function CreateQuizPage() {
         try {
           const content = e.target?.result;
           if (typeof content === 'string') {
-            const parsedQuestions = JSON.parse(content);
-            // Basic validation
+            const parsedContent = JSON.parse(content);
+            const parsedQuestions = Array.isArray(parsedContent) ? parsedContent : parsedContent.questions;
+            
             if (Array.isArray(parsedQuestions) && parsedQuestions.every(q => q.text && q.options && q.correctAnswer)) {
               setQuestions(parsedQuestions);
               setFileName(file.name);
@@ -58,20 +67,56 @@ export default function CreateQuizPage() {
     }
   };
 
+  const handleGenerateQuiz = async () => {
+    if (!topic || numQuestions <= 0) {
+      toast({
+        variant: "destructive",
+        title: "Thiếu thông tin",
+        description: "Vui lòng nhập chủ đề và số câu hỏi hợp lệ.",
+      });
+      return;
+    }
+    setIsGenerating(true);
+    try {
+      const result = await generateQuiz({ topic, numQuestions });
+      if (result && result.questions) {
+        setQuestions(result.questions);
+        toast({
+          title: "Tạo đề thành công!",
+          description: `Đã tạo ${result.questions.length} câu hỏi về chủ đề "${topic}".`,
+        });
+      } else {
+        throw new Error("Không nhận được câu hỏi từ AI.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast({
+        variant: "destructive",
+        title: "Lỗi tạo đề bằng AI",
+        description: "Đã có lỗi xảy ra. Vui lòng thử lại.",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   const handleCreateQuiz = () => {
     if (questions.length === 0) {
       toast({
         variant: "destructive",
         title: "Chưa có câu hỏi",
-        description: "Vui lòng tải lên một tệp JSON chứa các câu hỏi.",
+        description: "Vui lòng tạo câu hỏi bằng AI hoặc tải lên tệp JSON.",
       });
       return;
     }
     const quizCode = Math.floor(1000 + Math.random() * 9000).toString();
-    console.log("Quiz Data:", questions);
-    // Here you would typically save the quiz to a database
-    localStorage.setItem(`quiz-${quizCode}`, JSON.stringify(questions));
+    const quizData = {
+      questions,
+      durationMinutes: duration,
+      totalQuestions: questions.length
+    };
+    
+    localStorage.setItem(`quiz-${quizCode}`, JSON.stringify(quizData));
 
     toast({
       title: "Tạo Quiz thành công!",
@@ -90,39 +135,77 @@ export default function CreateQuizPage() {
             </Button>
         </header>
         <main className="container mx-auto py-8 px-4">
-            <Card className="max-w-2xl mx-auto shadow-lg">
+            <Card className="max-w-4xl mx-auto shadow-lg">
                 <CardHeader>
                     <CardTitle className="text-3xl font-headline">Tạo Quiz mới</CardTitle>
-                    <CardDescription>Tải lên một tệp JSON chứa danh sách các câu hỏi của bạn.</CardDescription>
+                    <CardDescription>Tạo câu hỏi bằng AI, tự soạn hoặc tải lên từ tệp JSON.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="quiz-file">Tệp câu hỏi (.json)</Label>
-                      <div className="flex items-center gap-4">
-                         <Input id="quiz-file" type="file" accept=".json" onChange={handleFileChange} className="hidden" />
-                         <Label htmlFor="quiz-file" className="flex-grow">
-                            <div className="h-12 border border-dashed border-input rounded-md flex items-center justify-center cursor-pointer hover:bg-muted transition-colors">
-                              {fileName ? (
-                                <span className="text-sm font-medium text-foreground">{fileName}</span>
-                              ) : (
-                                <div className='flex items-center gap-2 text-muted-foreground'>
-                                  <Upload className="h-5 w-5" />
-                                  <span>Nhấp để chọn tệp</span>
-                                </div>
-                              )}
-                            </div>
-                         </Label>
-                      </div>
-                      <p className="text-xs text-muted-foreground pt-1">
-                        Chưa có tệp mẫu? {" "}
-                        <a href="/quiz-example.json" download className="underline hover:text-primary">Tải tệp JSON mẫu tại đây.</a>
-                      </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                            <Label htmlFor="numQuestions">Số lượng câu hỏi</Label>
+                            <Input id="numQuestions" type="number" value={numQuestions} onChange={e => setNumQuestions(parseInt(e.target.value))} min="1" max="50" />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="duration">Thời gian làm bài (phút)</Label>
+                            <Input id="duration" type="number" value={duration} onChange={e => setDuration(parseInt(e.target.value))} min="1" />
+                        </div>
                     </div>
+
+                    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+                      <TabsList className="grid w-full grid-cols-3">
+                        <TabsTrigger value="ai"><Bot className="mr-2 h-4 w-4"/>Tạo bằng AI</TabsTrigger>
+                        <TabsTrigger value="manual"><Pencil className="mr-2 h-4 w-4"/>Tự soạn</TabsTrigger>
+                        <TabsTrigger value="upload"><FileJson className="mr-2 h-4 w-4"/>Tải tệp JSON</TabsTrigger>
+                      </TabsList>
+                      
+                      <TabsContent value="ai" className="mt-4 p-4 border rounded-md">
+                         <div className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="topic">Chủ đề câu hỏi</Label>
+                                <Input id="topic" placeholder="ví dụ: Lịch sử Việt Nam, Hóa học lớp 12..." value={topic} onChange={e => setTopic(e.target.value)} />
+                            </div>
+                            <Button onClick={handleGenerateQuiz} disabled={isGenerating} className="w-full">
+                                {isGenerating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Bot className="mr-2 h-4 w-4" />}
+                                {isGenerating ? 'Đang tạo đề...' : 'Tạo đề tự động'}
+                            </Button>
+                        </div>
+                      </TabsContent>
+                      
+                      <TabsContent value="manual" className="mt-4 p-4 border rounded-md">
+                        <p className="text-center text-muted-foreground">(Tính năng đang được phát triển)</p>
+                      </TabsContent>
+
+                      <TabsContent value="upload" className="mt-4 p-4 border rounded-md">
+                         <div className="space-y-2">
+                            <Label htmlFor="quiz-file">Tệp câu hỏi (.json)</Label>
+                            <div className="flex items-center gap-4">
+                                <Input id="quiz-file" type="file" accept=".json" onChange={handleFileChange} className="hidden" />
+                                <Label htmlFor="quiz-file" className="flex-grow">
+                                    <div className="h-12 border border-dashed border-input rounded-md flex items-center justify-center cursor-pointer hover:bg-muted transition-colors">
+                                    {fileName ? (
+                                        <span className="text-sm font-medium text-foreground">{fileName}</span>
+                                    ) : (
+                                        <div className='flex items-center gap-2 text-muted-foreground'>
+                                        <Upload className="h-5 w-5" />
+                                        <span>Nhấp để chọn tệp</span>
+                                        </div>
+                                    )}
+                                    </div>
+                                </Label>
+                            </div>
+                            <p className="text-xs text-muted-foreground pt-1">
+                                Chưa có tệp mẫu? {" "}
+                                <a href="/quiz-example.json" download className="underline hover:text-primary">Tải tệp JSON mẫu tại đây.</a>
+                            </p>
+                         </div>
+                      </TabsContent>
+                    </Tabs>
 
                     {questions.length > 0 && (
                       <div>
                         <h3 className="text-lg font-semibold mb-2">Xem trước Quiz</h3>
-                        <p className="text-sm text-muted-foreground">Đã tải {questions.length} câu hỏi.</p>
+                        <p className="text-sm text-muted-foreground">Đã có {questions.length} câu hỏi. Tổng thời gian: {duration} phút.</p>
                         <div className="mt-4 max-h-60 overflow-y-auto space-y-2 rounded-md border p-4">
                           {questions.map((q, i) => (
                             <div key={i} className="text-xs border-b pb-2 last:border-b-0">
@@ -136,7 +219,7 @@ export default function CreateQuizPage() {
 
                     <Button onClick={handleCreateQuiz} className="w-full mt-6" size="lg" disabled={questions.length === 0}>
                         <Wand2 className="mr-2 h-5 w-5" />
-                        Tạo Quiz
+                        Lưu và Tạo Quiz
                     </Button>
                 </CardContent>
             </Card>
