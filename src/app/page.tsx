@@ -105,8 +105,17 @@ export default function Home() {
                   data-ai-hint="teacher laptop classroom"
                 />
               </div>
-       <div> <CardDescription>Giáo viên cần sử dụng liên hệ: lvdoqt@gmail.com<br/>(c) Quiz Arena - Thầy Đồ - 2025.</CardDescription>
-          </div>
+       <div className="text-center text-gray-600 mt-4">
+                <p className="text-base">
+                  Chào mừng đến với <span className="font-bold text-primary">Đấu trường Quiz</span>! Nền tảng cho phép giáo viên dễ dàng tạo ra các cuộc thi trắc nghiệm hấp dẫn cho nhiều học sinh cùng làm nhìn thấy kết quả theo thời gian thực.
+                </p>
+                <p className="text-sm mt-2">
+                  Tự động tạo câu hỏi bằng AI, quản lý bài thi và theo dõi kết quả của học sinh trong thời gian thực - thúc đẩy sự hứng thú học tập của các em học sinh.
+                </p>
+         <p className="text-base">
+                  <span className="font-bold text-primary">Liên hệ: Thầy Đồ - lvdoqt@gmail.com</span>
+                </p>
+              </div>
             </CardContent>
              <CardFooter className="p-8">
                 <Button variant="destructive" onClick={() => router.push('/teacher/login')} className="w-full text-lg h-14 rounded-xl">
