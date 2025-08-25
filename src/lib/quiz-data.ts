@@ -13,6 +13,7 @@ export interface Question {
 }
 
 export interface QuizData {
+  teacherId?: string; // Add teacherId to associate quiz with a teacher
   questions: Question[];
   totalQuestions: number;
   durationMinutes: number;

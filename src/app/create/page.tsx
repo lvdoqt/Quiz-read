@@ -1,5 +1,5 @@
 "use client"
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,7 +11,8 @@ import { Question } from '@/lib/quiz-data'
 import { generateQuiz } from '@/ai/flows/quiz-generator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { doc, setDoc } from "firebase/firestore";
-import { db } from '@/lib/firebase';
+import { db, auth } from '@/lib/firebase';
+import { onAuthStateChanged, User } from 'firebase/auth'
 
 export default function CreateQuizPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -22,8 +23,26 @@ export default function CreateQuizPage() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('ai');
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const router = useRouter();
   const { toast } = useToast();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUser(user);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Chưa đăng nhập",
+          description: "Vui lòng đăng nhập để tạo quiz.",
+        });
+        router.push('/teacher/login');
+      }
+    });
+    return () => unsubscribe();
+  }, [router, toast]);
+
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -104,6 +123,14 @@ export default function CreateQuizPage() {
   };
 
   const handleCreateQuiz = async () => {
+    if (!currentUser) {
+       toast({
+        variant: "destructive",
+        title: "Lỗi",
+        description: "Không thể xác định người dùng. Vui lòng đăng nhập lại.",
+      });
+      return;
+    }
     if (questions.length === 0) {
       toast({
         variant: "destructive",
@@ -115,6 +142,7 @@ export default function CreateQuizPage() {
     setIsSaving(true);
     const quizCode = Math.floor(1000 + Math.random() * 9000).toString();
     const quizData = {
+      teacherId: currentUser.uid,
       questions,
       durationMinutes: duration,
       totalQuestions: questions.length
@@ -139,6 +167,10 @@ export default function CreateQuizPage() {
         setIsSaving(false);
     }
   };
+
+  if (!currentUser) {
+    return <div className="flex h-screen items-center justify-center"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
+  }
 
   return (
     <div className="min-h-screen bg-background">

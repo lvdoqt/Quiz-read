@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-import { PlusCircle, Trash2, Pencil, LogOut, BrainCircuit, Loader2 } from 'lucide-react'
+import { PlusCircle, Trash2, Pencil, LogOut, BrainCircuit, Loader2, User } from 'lucide-react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,9 +15,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
-import { db } from '@/lib/firebase';
+import { collection, getDocs, deleteDoc, doc, query, where } from "firebase/firestore";
+import { db, auth } from '@/lib/firebase';
 import { useToast } from '@/hooks/use-toast';
+import { onAuthStateChanged, signOut } from 'firebase/auth'
 
 interface StoredQuiz {
   code: string;
@@ -25,16 +26,29 @@ interface StoredQuiz {
 }
 
 export default function TeacherDashboard() {
-  const router = useRouter()
+  const router = useRouter();
   const [quizzes, setQuizzes] = useState<StoredQuiz[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    const fetchQuizzes = async () => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserEmail(user.email);
+        fetchQuizzes(user.uid);
+      } else {
+        router.replace('/teacher/login');
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
+
+  const fetchQuizzes = async (teacherId: string) => {
       setIsLoading(true);
       try {
-        const querySnapshot = await getDocs(collection(db, "quizzes"));
+        const q = query(collection(db, "quizzes"), where("teacherId", "==", teacherId));
+        const querySnapshot = await getDocs(q);
         const loadedQuizzes: StoredQuiz[] = [];
         querySnapshot.forEach((doc) => {
           const data = doc.data();
@@ -55,12 +69,22 @@ export default function TeacherDashboard() {
         setIsLoading(false);
       }
     }
-    fetchQuizzes();
-  }, [toast]);
   
-  const handleLogout = () => {
-    localStorage.removeItem('teacherLoggedIn');
-    router.push('/teacher/login');
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({
+        title: "Đã đăng xuất",
+        description: "Hẹn gặp lại bạn.",
+      });
+      router.push('/teacher/login');
+    } catch(error) {
+      toast({
+        variant: "destructive",
+        title: "Lỗi đăng xuất",
+        description: "Đã có lỗi xảy ra. Vui lòng thử lại."
+      })
+    }
   };
 
   const deleteQuiz = async (quizCode: string) => {
@@ -82,6 +106,10 @@ export default function TeacherDashboard() {
   };
 
 
+  if (isLoading && !userEmail) {
+    return <div className="flex h-screen items-center justify-center"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>;
+  }
+
   return (
     <div className="min-h-screen bg-background p-4">
       <div className="container mx-auto py-8">
@@ -91,6 +119,12 @@ export default function TeacherDashboard() {
               <h1 className="text-5xl font-bold font-headline text-foreground">Trang quản lý giáo viên</h1>
           </div>
           <p className="text-muted-foreground text-lg">Quản lý các bài quiz của bạn tại đây.</p>
+          {userEmail && (
+            <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-muted px-4 py-2 text-sm font-medium">
+              <User className="h-4 w-4" />
+              {userEmail}
+            </div>
+          )}
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
@@ -114,7 +148,7 @@ export default function TeacherDashboard() {
 
             <Card className="shadow-lg lg:col-span-2">
                 <CardHeader>
-                    <CardTitle>Danh sách Quiz đã tạo</CardTitle>
+                    <CardTitle>Danh sách Quiz của bạn</CardTitle>
                     <CardDescription>Xem và quản lý các quiz bạn đã tạo.</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -162,7 +196,7 @@ export default function TeacherDashboard() {
                             ))}
                         </div>
                     ) : (
-                        <p className="text-center text-muted-foreground py-4">Chưa có quiz nào được tạo.</p>
+                        <p className="text-center text-muted-foreground py-4">Bạn chưa tạo quiz nào.</p>
                     )}
                 </CardContent>
             </Card>
