@@ -83,7 +83,7 @@ export default function TeacherLoginPage() {
           <CardHeader>
             <CardTitle>Đăng nhập</CardTitle>
             <CardDescription>
-              Sử dụng email: <span className="font-bold">{DUMMY_EMAIL}</span> và mật khẩu: <span className="font-bold">{DUMMY_PASSWORD}</span> để đăng nhập.
+            Bạn sử dụng email và mật khẩu của Admin cấp để đăng nhập.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -92,7 +92,7 @@ export default function TeacherLoginPage() {
               <Input 
                 id="email" 
                 type="email"
-                placeholder="teacher@example.com" 
+                placeholder="teacher@lop12.com" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required 
