@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Gamepad2, BrainCircuit, School } from 'lucide-react'
+import { Gamepad2, BrainCircuit, School, Trophy } from 'lucide-react'
 import Image from 'next/image'
 
 
@@ -26,12 +26,10 @@ export default function Home() {
     <main className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-4 sm:p-6 md:p-8">
       <div className="text-center mb-10">
         <div className="flex justify-center items-center gap-4 mb-2">
-  {/* Icon đấu trường */}
   <Trophy className="h-16 w-16 text-yellow-500" />
-  {/* Chữ Đấu trường Quiz màu đỏ */}
-  <h1 className="text-6xl font-bold font-headline text-red-600">
-    Đấu trường Quiz
-  </h1>
+  <h1 className="text-6xl font-bold font-headline bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-500">
+  Đấu trường Quiz
+</h1>
 </div>
         <p className="text-gray-500 text-xl">Chiến trường đố vui thời gian thực đỉnh cao.</p>
       </div>
